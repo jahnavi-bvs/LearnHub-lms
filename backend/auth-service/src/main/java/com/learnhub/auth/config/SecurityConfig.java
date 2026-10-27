@@ -7,11 +7,13 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
 
 /**
  * Replaces Spring Security's defaults (login form, session cookie, generated password)
- * with rules suited to a JSON API. JWT checking is added in the next step.
+ * with rules suited to a JSON API that authenticates with JWTs.
  */
 @Configuration
 public class SecurityConfig {
@@ -24,11 +26,30 @@ public class SecurityConfig {
                 // Never create an HTTP session - every request must prove who it is on its own
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.POST, "/api/auth/register").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/auth/register", "/api/auth/login").permitAll()
                         // Spring forwards errors to /error; without this, error responses become 401/403
                         .requestMatchers("/error").permitAll()
-                        .anyRequest().authenticated());
+                        .anyRequest().authenticated())
+                // Read "Authorization: Bearer <token>", verify it with our JwtDecoder bean,
+                // and reply 401 if it is missing, expired, or tampered with
+                .oauth2ResourceServer(oauth2 -> oauth2
+                        .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())));
         return http.build();
+    }
+
+    /**
+     * Turns the token's "role" claim (e.g. "INSTRUCTOR") into the Spring authority
+     * "ROLE_INSTRUCTOR", so rules like hasRole("INSTRUCTOR") work.
+     */
+    @Bean
+    public JwtAuthenticationConverter jwtAuthenticationConverter() {
+        JwtGrantedAuthoritiesConverter authorities = new JwtGrantedAuthoritiesConverter();
+        authorities.setAuthoritiesClaimName("role");
+        authorities.setAuthorityPrefix("ROLE_");
+
+        JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
+        converter.setJwtGrantedAuthoritiesConverter(authorities);
+        return converter;
     }
 
     @Bean

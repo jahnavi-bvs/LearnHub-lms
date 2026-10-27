@@ -1,10 +1,12 @@
 package com.learnhub.auth.common;
 
 import com.learnhub.auth.auth.EmailAlreadyRegisteredException;
+import com.learnhub.auth.auth.InvalidCredentialsException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.ErrorResponseException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -40,6 +42,19 @@ public class GlobalExceptionHandler {
                 "Request body is missing or is not valid JSON, or a field has the wrong type");
         problem.setTitle("Malformed request");
         return problem;
+    }
+
+    @ExceptionHandler(InvalidCredentialsException.class)
+    public ProblemDetail handleInvalidCredentials(InvalidCredentialsException ex) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, ex.getMessage());
+        problem.setTitle("Authentication failed");
+        return problem;
+    }
+
+    /** ResponseStatusException and friends already carry a ProblemDetail - return it as-is. */
+    @ExceptionHandler(ErrorResponseException.class)
+    public ProblemDetail handleErrorResponse(ErrorResponseException ex) {
+        return ex.getBody();
     }
 
     @ExceptionHandler(EmailAlreadyRegisteredException.class)

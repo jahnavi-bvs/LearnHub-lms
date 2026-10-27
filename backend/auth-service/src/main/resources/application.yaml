@@ -26,3 +26,10 @@ spring:
     properties:
       hibernate:
         format_sql: true
+
+# Our own settings, bound to the JwtProperties record
+learnhub:
+  jwt:
+    secret: ${JWT_SECRET}      # from local-secrets.properties - never hardcode it
+    issuer: learnhub-auth      # written into every token as "iss" and checked when verifying
+    expiration: 1h             # how long a token stays valid (java.time.Duration format)

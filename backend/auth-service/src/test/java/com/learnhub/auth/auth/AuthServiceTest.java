@@ -11,6 +11,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
@@ -27,6 +29,9 @@ class AuthServiceTest {
 
     @Mock
     PasswordEncoder passwordEncoder;
+
+    @Mock
+    TokenService tokenService;
 
     @InjectMocks
     AuthService authService;
@@ -57,5 +62,39 @@ class AuthServiceTest {
                 .isInstanceOf(EmailAlreadyRegisteredException.class);
 
         verify(userRepository, never()).save(any());
+    }
+
+    @Test
+    void login_withCorrectPassword_returnsToken() {
+        User user = new User("Carol", "carol@example.com", "HASH", Role.STUDENT);
+        when(userRepository.findByEmail("carol@example.com")).thenReturn(Optional.of(user));
+        when(passwordEncoder.matches("secret123", "HASH")).thenReturn(true);
+        when(tokenService.createToken(user)).thenReturn("TOKEN");
+        when(tokenService.expiresInSeconds()).thenReturn(3600L);
+
+        LoginResponse response = authService.login(new LoginRequest(" Carol@Example.com", "secret123"));
+
+        assertThat(response.accessToken()).isEqualTo("TOKEN");
+        assertThat(response.tokenType()).isEqualTo("Bearer");
+        assertThat(response.user().email()).isEqualTo("carol@example.com");
+    }
+
+    @Test
+    void login_withWrongPassword_throwsInvalidCredentials() {
+        User user = new User("Carol", "carol@example.com", "HASH", Role.STUDENT);
+        when(userRepository.findByEmail("carol@example.com")).thenReturn(Optional.of(user));
+        when(passwordEncoder.matches("wrong", "HASH")).thenReturn(false);
+
+        assertThatThrownBy(() -> authService.login(new LoginRequest("carol@example.com", "wrong")))
+                .isInstanceOf(InvalidCredentialsException.class);
+        verify(tokenService, never()).createToken(any());
+    }
+
+    @Test
+    void login_withUnknownEmail_throwsInvalidCredentials() {
+        when(userRepository.findByEmail("nobody@example.com")).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> authService.login(new LoginRequest("nobody@example.com", "secret123")))
+                .isInstanceOf(InvalidCredentialsException.class);
     }
 }
