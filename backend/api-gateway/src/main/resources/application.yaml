@@ -1,0 +1,15 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+
+  # Same shared secrets file (JWT_SECRET will be read from here on Day 3).
+  config:
+    import:
+      - optional:file:./local-secrets.properties
+      - optional:file:../local-secrets.properties
+      - optional:file:./backend/local-secrets.properties   # when run from the project root folder (IntelliJ)
+
+# Routes to the four services and CORS for React are added on Day 2.

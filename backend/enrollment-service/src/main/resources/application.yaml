@@ -1,0 +1,28 @@
+server:
+  port: 8083
+
+spring:
+  application:
+    name: enrollment-service
+
+  # Loads DB_USERNAME / DB_PASSWORD (and later JWT_SECRET) from your local secrets file.
+  # Real environment variables, if set, take priority over this file.
+  config:
+    import:
+      - optional:file:./local-secrets.properties
+      - optional:file:../local-secrets.properties
+      - optional:file:./backend/local-secrets.properties   # when run from the project root folder (IntelliJ)
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/learnhub_enrollment
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+
+  jpa:
+    hibernate:
+      ddl-auto: update      # Hibernate creates/updates tables from @Entity classes
+    open-in-view: false     # don't keep DB connections open for the whole web request
+    show-sql: true          # print SQL in the console (handy while learning)
+    properties:
+      hibernate:
+        format_sql: true

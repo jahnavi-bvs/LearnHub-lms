@@ -1,0 +1,14 @@
+# IDE settings (personal to each machine)
+.idea/
+*.iml
+.vscode/
+
+# Build output
+target/
+
+# Frontend dependencies (added later)
+node_modules/
+
+# Never commit passwords or secrets
+local-secrets.properties
+.env
