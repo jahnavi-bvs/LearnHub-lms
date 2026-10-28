@@ -133,7 +133,7 @@ export default function CourseDetailPage() {
             <ul className="list">
               {assessments.data.map((a) => (
                 <li key={a.id} className="list-item">
-                  <span className="list-title">{a.title}</span>
+                  <Link to={`/assessments/${a.id}`} className="list-title">{a.title}</Link>
                   <span className="muted">{a.questionCount} questions</span>
                 </li>
               ))}
