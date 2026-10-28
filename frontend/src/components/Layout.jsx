@@ -21,6 +21,7 @@ export default function Layout() {
             <NavLink to="/" end>Courses</NavLink>
             {isAuthenticated ? (
               <>
+                {user.role === 'STUDENT' && <NavLink to="/my-learning">My learning</NavLink>}
                 <NavLink to="/profile">Profile</NavLink>
                 <span className="user-badge">{user.fullName} · {user.role}</span>
                 <button type="button" className="button button-secondary" onClick={handleLogout}>
