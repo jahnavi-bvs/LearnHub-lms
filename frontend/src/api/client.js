@@ -3,6 +3,14 @@
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
+// Called when a request that carried a token gets 401 (token expired or rejected).
+// AuthProvider registers its logout function here, so every page gets this for free.
+let unauthorizedHandler = null;
+
+export function setUnauthorizedHandler(handler) {
+  unauthorizedHandler = handler;
+}
+
 /**
  * Thrown for every failed request. Carries the backend's problem-detail fields
  * (see docs/API.md, "Error format") so pages can show the right message.
@@ -49,6 +57,12 @@ export async function apiRequest(path, { method = 'GET', body, token } = {}) {
   const data = isJson ? await response.json() : null;
 
   // fetch does NOT throw for 4xx/5xx - we have to check response.ok ourselves
-  if (!response.ok) throw new ApiError(response.status, data);
+  if (!response.ok) {
+    // Only when we SENT a token: a 401 from the login form just means "wrong password"
+    if (response.status === 401 && token && unauthorizedHandler) {
+      unauthorizedHandler();
+    }
+    throw new ApiError(response.status, data);
+  }
   return data;
 }
