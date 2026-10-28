@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Aggregator ("reactor") POM: lets one command build or test every service.
+    cd backend
+    .\mvnw.cmd test        (Windows)   /   ./mvnw test   (Git Bash)
+  Each service keeps its own pom.xml and Spring Boot parent; this file only lists them.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.learnhub</groupId>
+    <artifactId>learnhub-backend</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <name>LearnHub backend (all services)</name>
+
+    <modules>
+        <module>auth-service</module>
+        <module>course-service</module>
+        <module>enrollment-service</module>
+        <module>assessment-service</module>
+        <module>api-gateway</module>
+    </modules>
+</project>
