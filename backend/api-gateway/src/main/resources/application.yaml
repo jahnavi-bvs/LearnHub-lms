@@ -5,11 +5,53 @@ spring:
   application:
     name: api-gateway
 
-  # Same shared secrets file (JWT_SECRET will be read from here on Day 3).
+  # Same shared secrets file as the other services (JWT_SECRET)
   config:
     import:
       - optional:file:./local-secrets.properties
       - optional:file:../local-secrets.properties
       - optional:file:./backend/local-secrets.properties   # when run from the project root folder (IntelliJ)
 
-# Routes to the four services and CORS for React are added on Day 2.
+  # The HTTP client the gateway uses to call the services
+  http:
+    clients:
+      connect-timeout: 2s     # service not reachable -> fail fast (503)
+      read-timeout: 10s       # service not answering -> give up (503)
+
+  # Routing table: a request whose path matches a predicate is forwarded, unchanged, to that uri.
+  # Headers (including Authorization) are passed through.
+  cloud:
+    gateway:
+      server:
+        webmvc:
+          routes:
+            - id: auth-service
+              uri: ${learnhub.services.auth-url}
+              predicates:
+                - Path=/api/auth/**
+            - id: course-service
+              uri: ${learnhub.services.course-url}
+              predicates:
+                - Path=/api/courses/**
+            - id: enrollment-service
+              uri: ${learnhub.services.enrollment-url}
+              predicates:
+                - Path=/api/enrollments/**
+            - id: assessment-service
+              uri: ${learnhub.services.assessment-url}
+              predicates:
+                - Path=/api/assessments/**
+
+learnhub:
+  jwt:
+    secret: ${JWT_SECRET}
+    issuer: learnhub-auth
+  # Browser origins allowed to call the API (the React dev server)
+  cors:
+    allowed-origins: http://localhost:5173
+  # Where each service lives (used by the routes above)
+  services:
+    auth-url: http://localhost:8081
+    course-url: http://localhost:8082
+    enrollment-url: http://localhost:8083
+    assessment-url: http://localhost:8084
