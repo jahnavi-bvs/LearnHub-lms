@@ -31,6 +31,12 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.POST, "/api/assessments").hasAnyRole("INSTRUCTOR", "ADMIN")
+                        // Submissions
+                        .requestMatchers(HttpMethod.GET, "/api/assessments/submissions/mine").hasRole("STUDENT")
+                        .requestMatchers(HttpMethod.POST, "/api/assessments/{id}/submissions").hasRole("STUDENT")
+                        .requestMatchers(HttpMethod.GET, "/api/assessments/{id}/submissions/mine").hasRole("STUDENT")
+                        // "is it YOUR assessment?" is checked in SubmissionService
+                        .requestMatchers(HttpMethod.GET, "/api/assessments/{id}/submissions").hasAnyRole("INSTRUCTOR", "ADMIN")
                         // Viewing needs "owner or enrolled" - data-dependent, so checked in AssessmentService
                         .requestMatchers(HttpMethod.GET, "/api/assessments", "/api/assessments/{id}").authenticated()
                         .requestMatchers("/error").permitAll()

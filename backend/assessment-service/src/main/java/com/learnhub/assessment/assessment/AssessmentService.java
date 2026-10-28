@@ -64,8 +64,7 @@ public class AssessmentService {
 
     /** Owner/admin get the answer key; enrolled students get the questions only. */
     public AssessmentResponse get(Long id, CurrentUser user) {
-        Assessment assessment = assessmentRepository.findWithQuestionsById(id)
-                .orElseThrow(() -> new AssessmentNotFoundException(id));
+        Assessment assessment = loadWithQuestions(id);
 
         if (canManage(assessment, user)) {
             return AssessmentResponse.from(assessment, true);
@@ -77,12 +76,20 @@ public class AssessmentService {
         throw new AccessDeniedException("You can only view assessments for your own courses");
     }
 
-    private boolean canManage(Assessment assessment, CurrentUser user) {
+    // The three methods below are also used by SubmissionService
+
+    /** The assessment with its questions and options loaded. */
+    public Assessment loadWithQuestions(Long id) {
+        return assessmentRepository.findWithQuestionsById(id)
+                .orElseThrow(() -> new AssessmentNotFoundException(id));
+    }
+
+    public boolean canManage(Assessment assessment, CurrentUser user) {
         // Local check - no network call, thanks to instructorId stored at creation
         return user.isAdmin() || assessment.getInstructorId().equals(user.id());
     }
 
-    private void requireEnrolled(Long courseId, CurrentUser student) {
+    public void requireEnrolled(Long courseId, CurrentUser student) {
         if (!enrollmentClient.isEnrolled(courseId, student.tokenValue())) {
             throw new AccessDeniedException("You must be enrolled in the course to view its assessments");
         }

@@ -189,13 +189,15 @@ class AssessmentControllerIntegrationTest {
     @Test
     void listForCourse_enrolledStudent_seesSummaries() throws Exception {
         createQuiz(token(OWNER_ID, "INSTRUCTOR"), QUIZ_JSON).andExpect(status().isCreated());
+        long id = createdIds.getLast();
         when(enrollmentClient.isEnrolled(eq(COURSE_ID), anyString())).thenReturn(true);
 
+        // The dev database may hold other quizzes for course 6, so find ours by id - not by position
         mockMvc.perform(get("/api/assessments").param("courseId", "6")
                         .header(HttpHeaders.AUTHORIZATION, token(3, "STUDENT")))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].title").value("Java Basics Quiz"))
-                .andExpect(jsonPath("$[0].questionCount").value(2));
+                .andExpect(jsonPath("$[?(@.id == " + id + ")].title").value("Java Basics Quiz"))
+                .andExpect(jsonPath("$[?(@.id == " + id + ")].questionCount").value(2));
     }
 
     @Test

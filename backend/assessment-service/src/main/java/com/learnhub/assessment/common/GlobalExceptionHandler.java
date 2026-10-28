@@ -3,6 +3,9 @@ package com.learnhub.assessment.common;
 import com.learnhub.assessment.assessment.AssessmentNotFoundException;
 import com.learnhub.assessment.assessment.CourseNotFoundException;
 import com.learnhub.assessment.client.DependencyUnavailableException;
+import com.learnhub.assessment.submission.AlreadySubmittedException;
+import com.learnhub.assessment.submission.InvalidSubmissionException;
+import com.learnhub.assessment.submission.SubmissionNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -71,6 +74,27 @@ public class GlobalExceptionHandler {
     public ProblemDetail handleCourseNotFound(CourseNotFoundException ex) {
         ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
         problem.setTitle("Course not found");
+        return problem;
+    }
+
+    @ExceptionHandler(AlreadySubmittedException.class)
+    public ProblemDetail handleAlreadySubmitted(AlreadySubmittedException ex) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ex.getMessage());
+        problem.setTitle("Already submitted");
+        return problem;
+    }
+
+    @ExceptionHandler(InvalidSubmissionException.class)
+    public ProblemDetail handleInvalidSubmission(InvalidSubmissionException ex) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
+        problem.setTitle("Invalid submission");
+        return problem;
+    }
+
+    @ExceptionHandler(SubmissionNotFoundException.class)
+    public ProblemDetail handleSubmissionNotFound(SubmissionNotFoundException ex) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
+        problem.setTitle("Submission not found");
         return problem;
     }
 
