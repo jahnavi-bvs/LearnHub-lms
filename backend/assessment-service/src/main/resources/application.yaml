@@ -26,3 +26,15 @@ spring:
     properties:
       hibernate:
         format_sql: true
+
+learnhub:
+  # Only VERIFIES tokens issued by auth-service - must use the same secret and issuer
+  jwt:
+    secret: ${JWT_SECRET}
+    issuer: learnhub-auth
+  # Where the other services live (bound to ServicesProperties)
+  services:
+    course-url: http://localhost:8082
+    enrollment-url: http://localhost:8083
+    connect-timeout: 2s
+    read-timeout: 5s
