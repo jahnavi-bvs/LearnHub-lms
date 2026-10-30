@@ -155,7 +155,12 @@ export default function CourseDetailPage() {
 
       {canSeeQuizzes && (
         <section>
-          <h2>Quizzes</h2>
+          <div className="section-header">
+            <h2>Quizzes</h2>
+            {canManage && (
+              <Link to={`/teaching/courses/${courseId}/quizzes/new`} className="button button-secondary">New quiz</Link>
+            )}
+          </div>
           {assessments.loading && <p className="muted">Loading quizzes…</p>}
           {assessments.error && <p className="alert alert-error" role="alert">{assessments.error.message}</p>}
           {assessments.data && assessments.data.length === 0 && (
@@ -166,7 +171,10 @@ export default function CourseDetailPage() {
               {assessments.data.map((a) => (
                 <li key={a.id} className="list-item">
                   <Link to={`/assessments/${a.id}`} className="list-title">{a.title}</Link>
-                  <span className="muted">{a.questionCount} questions</span>
+                  <span className="row-actions">
+                    <span className="muted">{a.questionCount} questions</span>
+                    {canManage && <Link to={`/teaching/assessments/${a.id}/submissions`}>Submissions</Link>}
+                  </span>
                 </li>
               ))}
             </ul>

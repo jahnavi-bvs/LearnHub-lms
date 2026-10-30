@@ -47,6 +47,13 @@ export default function AssessmentPage() {
       <h1>{a.title}</h1>
       {a.description && <p className="detail-text">{a.description}</p>}
 
+      {!isStudent && (
+        <p>
+          <Link to={`/teaching/assessments/${a.id}/submissions`} className="button button-secondary">
+            View submissions
+          </Link>
+        </p>
+      )}
       {!isStudent && <AnswerKey assessment={a} />}
       {isStudent && result && <QuizResult result={result} />}
       {isStudent && !result && (

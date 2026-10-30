@@ -532,6 +532,71 @@ a {
   resize: vertical;
 }
 
+/* Section heading with an action button beside it */
+.section-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin: 2rem 0 0.75rem;
+}
+
+.detail .section-header h2 {
+  margin: 0;
+}
+
+.row-actions {
+  align-items: center;
+}
+
+/* Quiz builder */
+.quiz-builder {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.quiz-builder .form {
+  margin-bottom: 0;
+}
+
+.builder-question {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.builder-question legend {
+  float: none;
+  margin-bottom: 0;
+}
+
+.builder-hint {
+  margin: 0;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.builder-option {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.builder-option-text {
+  flex: 1;
+  min-width: 0;
+  font: inherit;
+  padding: 0.5rem 0.7rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.builder-errors {
+  padding-left: 1.1rem;
+}
+
 /* Messages */
 .alert {
   padding: 0.75rem 1rem;

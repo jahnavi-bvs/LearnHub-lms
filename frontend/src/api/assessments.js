@@ -10,6 +10,19 @@ export function getAssessment(id, token) {
   return apiRequest(`/api/assessments/${id}`, { token });
 }
 
+/**
+ * POST /api/assessments - the course's instructor or an admin.
+ * body: { courseId, title, description, questions: [{ text, options: [string], correctOptionIndex }] }
+ */
+export function createAssessment(assessment, token) {
+  return apiRequest('/api/assessments', { method: 'POST', body: assessment, token });
+}
+
+/** GET /api/assessments/{id}/submissions - every student's score; the course's instructor or an admin. */
+export function listSubmissions(id, token) {
+  return apiRequest(`/api/assessments/${id}/submissions`, { token });
+}
+
 /** POST /api/assessments/{id}/submissions - one attempt per student; returns the graded result. */
 export function submitAnswers(id, answers, token) {
   return apiRequest(`/api/assessments/${id}/submissions`, { method: 'POST', body: { answers }, token });

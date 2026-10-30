@@ -11,6 +11,8 @@ import MyLearningPage from './pages/MyLearningPage';
 import MyResultsPage from './pages/MyResultsPage';
 import NotFoundPage from './pages/NotFoundPage';
 import ProfilePage from './pages/ProfilePage';
+import QuizBuilderPage from './pages/QuizBuilderPage';
+import QuizSubmissionsPage from './pages/QuizSubmissionsPage';
 import RegisterPage from './pages/RegisterPage';
 import TeachingPage from './pages/TeachingPage';
 
@@ -31,6 +33,8 @@ export default function App() {
         <Route path="/teaching" element={<RequireAuth roles={TEACHERS}><TeachingPage /></RequireAuth>} />
         <Route path="/teaching/new" element={<RequireAuth roles={TEACHERS}><CourseCreatePage /></RequireAuth>} />
         <Route path="/teaching/courses/:id/edit" element={<RequireAuth roles={TEACHERS}><CourseEditPage /></RequireAuth>} />
+        <Route path="/teaching/courses/:id/quizzes/new" element={<RequireAuth roles={TEACHERS}><QuizBuilderPage /></RequireAuth>} />
+        <Route path="/teaching/assessments/:id/submissions" element={<RequireAuth roles={TEACHERS}><QuizSubmissionsPage /></RequireAuth>} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/profile" element={<RequireAuth><ProfilePage /></RequireAuth>} />
