@@ -1,13 +1,14 @@
 /**
  * Label + input + the backend's validation message for this field (if any).
- * Extra props (type, value, onChange, autoComplete...) go straight to the <input>.
+ * `as` picks the element: "input" (default) or "textarea".
+ * Extra props (type, value, onChange, autoComplete, rows...) go straight to that element.
  */
-export default function FormField({ label, name, error, ...inputProps }) {
+export default function FormField({ label, name, error, as: Element = 'input', ...inputProps }) {
   const errorId = `${name}-error`;
   return (
     <div className="field">
       <label htmlFor={name}>{label}</label>
-      <input
+      <Element
         id={name}
         name={name}
         aria-invalid={error ? 'true' : undefined}

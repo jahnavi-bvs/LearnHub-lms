@@ -469,6 +469,69 @@ a {
   white-space: nowrap;
 }
 
+/* Instructor pages */
+.page-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.page-header h1 {
+  margin: 0;
+}
+
+.form-page-wide {
+  max-width: 640px;
+}
+
+.button {
+  text-decoration: none; /* when a <Link> is styled as a button */
+}
+
+.button-danger {
+  background: transparent;
+  color: var(--error-text);
+  border: 1px solid var(--border);
+  padding: 0.35rem 0.8rem;
+}
+
+.button-danger:hover {
+  background: var(--error-bg);
+}
+
+.row-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.badge-published {
+  background: var(--success-bg);
+  color: var(--success-text);
+}
+
+.checkbox {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.checkbox input {
+  margin-top: 0.3rem;
+}
+
+.small-inline {
+  font-weight: 400;
+}
+
+.field textarea {
+  resize: vertical;
+}
+
 /* Messages */
 .alert {
   padding: 0.75rem 1rem;

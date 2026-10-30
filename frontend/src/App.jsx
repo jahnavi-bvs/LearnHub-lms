@@ -2,6 +2,8 @@ import { Route, Routes } from 'react-router-dom';
 import RequireAuth from './auth/RequireAuth';
 import Layout from './components/Layout';
 import AssessmentPage from './pages/AssessmentPage';
+import CourseCreatePage from './pages/CourseCreatePage';
+import CourseEditPage from './pages/CourseEditPage';
 import CourseDetailPage from './pages/CourseDetailPage';
 import CourseListPage from './pages/CourseListPage';
 import LoginPage from './pages/LoginPage';
@@ -10,6 +12,9 @@ import MyResultsPage from './pages/MyResultsPage';
 import NotFoundPage from './pages/NotFoundPage';
 import ProfilePage from './pages/ProfilePage';
 import RegisterPage from './pages/RegisterPage';
+import TeachingPage from './pages/TeachingPage';
+
+const TEACHERS = ['INSTRUCTOR', 'ADMIN'];
 
 /** URL -> page. Routes nested inside <Layout> render in its <Outlet />. */
 export default function App() {
@@ -22,6 +27,10 @@ export default function App() {
         <Route path="/my-learning" element={<RequireAuth roles={['STUDENT']}><MyLearningPage /></RequireAuth>} />
         <Route path="/my-results" element={<RequireAuth roles={['STUDENT']}><MyResultsPage /></RequireAuth>} />
         <Route path="/assessments/:id" element={<RequireAuth><AssessmentPage /></RequireAuth>} />
+        {/* Instructor area */}
+        <Route path="/teaching" element={<RequireAuth roles={TEACHERS}><TeachingPage /></RequireAuth>} />
+        <Route path="/teaching/new" element={<RequireAuth roles={TEACHERS}><CourseCreatePage /></RequireAuth>} />
+        <Route path="/teaching/courses/:id/edit" element={<RequireAuth roles={TEACHERS}><CourseEditPage /></RequireAuth>} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/profile" element={<RequireAuth><ProfilePage /></RequireAuth>} />

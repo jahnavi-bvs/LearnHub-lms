@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link, useLocation, useParams } from 'react-router-dom';
 import { listAssessmentsForCourse } from '../api/assessments';
 import { getCourse } from '../api/courses';
-import { dropEnrollment, enroll, myEnrollments } from '../api/enrollments';
+import { courseRoster, dropEnrollment, enroll, myEnrollments } from '../api/enrollments';
 import { useAuth } from '../auth/useAuth';
 import { useAsync } from '../hooks/useAsync';
 
@@ -23,11 +23,17 @@ export default function CourseDetailPage() {
   // Derived, not stored: "am I enrolled?" is computed from the enrollments we loaded
   const enrollment = enrollments.data?.find((e) => e.courseId === courseId) ?? null;
   const isOwner = course.data != null && user != null && course.data.instructorId === user.id;
-  const canSeeQuizzes = enrollment != null || isOwner || user?.role === 'ADMIN';
+  const canManage = isOwner || user?.role === 'ADMIN';
+  const canSeeQuizzes = enrollment != null || canManage;
 
   const assessments = useAsync(
     () => (canSeeQuizzes ? listAssessmentsForCourse(courseId, token) : Promise.resolve([])),
     [canSeeQuizzes, courseId, token],
+  );
+  // Who is enrolled: only the course's instructor (or an admin) may see this
+  const roster = useAsync(
+    () => (canManage ? courseRoster(courseId, token) : Promise.resolve([])),
+    [canManage, courseId, token],
   );
 
   const [busy, setBusy] = useState(false);
@@ -115,11 +121,37 @@ export default function CourseDetailPage() {
           )
         )}
 
-        {isOwner && <p className="muted">You are the instructor of this course.</p>}
-        {isAuthenticated && !isStudent && !isOwner && (
+        {canManage && (
+          <div className="panel-row">
+            <p className="muted">
+              {isOwner ? 'You are the instructor of this course.' : 'Admin view.'}
+            </p>
+            <Link to={`/teaching/courses/${courseId}/edit`} className="button button-secondary">Edit course</Link>
+          </div>
+        )}
+        {isAuthenticated && !isStudent && !canManage && (
           <p className="muted">Only students can enroll in courses.</p>
         )}
       </div>
+
+      {canManage && (
+        <section>
+          <h2>Enrolled students</h2>
+          {roster.loading && <p className="muted">Loading students…</p>}
+          {roster.error && <p className="alert alert-error" role="alert">{roster.error.message}</p>}
+          {roster.data && roster.data.length === 0 && <p className="muted">No students have enrolled yet.</p>}
+          {roster.data && roster.data.length > 0 && (
+            <ul className="list">
+              {roster.data.map((e) => (
+                <li key={e.id} className="list-item">
+                  <span className="list-title">{e.studentName}</span>
+                  <span className="muted">Enrolled {new Date(e.enrolledAt).toLocaleDateString()}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+      )}
 
       {canSeeQuizzes && (
         <section>
