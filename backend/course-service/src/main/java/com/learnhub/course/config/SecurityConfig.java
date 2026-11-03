@@ -37,7 +37,11 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // must come before "/api/courses/{id}", which would also match "mine"
                         .requestMatchers(HttpMethod.GET, "/api/courses/mine").hasAnyRole("INSTRUCTOR", "ADMIN")
-                        .requestMatchers(HttpMethod.GET, "/api/courses", "/api/courses/{id}").permitAll()
+                        // The module outline (titles only) is public; a module's content is not
+                        .requestMatchers(HttpMethod.GET, "/api/courses", "/api/courses/{id}", "/api/courses/{id}/modules").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/courses/{id}/modules").hasAnyRole("INSTRUCTOR", "ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/courses/{id}/modules/**").hasAnyRole("INSTRUCTOR", "ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/courses/{id}/modules/**").hasAnyRole("INSTRUCTOR", "ADMIN")
                         .requestMatchers(HttpMethod.POST, "/api/courses").hasAnyRole("INSTRUCTOR", "ADMIN")
                         // ownership (is it YOUR course?) is checked in CourseService
                         .requestMatchers(HttpMethod.PUT, "/api/courses/{id}").hasAnyRole("INSTRUCTOR", "ADMIN")

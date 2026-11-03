@@ -1,5 +1,6 @@
 package com.learnhub.course.course;
 
+import com.learnhub.course.module.CourseModuleRepository;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -10,9 +11,11 @@ import java.util.List;
 public class CourseService {
 
     private final CourseRepository courseRepository;
+    private final CourseModuleRepository moduleRepository;
 
-    public CourseService(CourseRepository courseRepository) {
+    public CourseService(CourseRepository courseRepository, CourseModuleRepository moduleRepository) {
         this.courseRepository = courseRepository;
+        this.moduleRepository = moduleRepository;
     }
 
     @Transactional(readOnly = true)
@@ -65,7 +68,16 @@ public class CourseService {
     public void delete(Long id, CurrentUser user) {
         Course course = findOrThrow(id);
         requireCanManage(course, user);
+        // Children first: modules reference the course through a foreign key
+        moduleRepository.deleteAll(moduleRepository.findByCourseIdOrderByPositionAsc(id));
         courseRepository.delete(course);
+    }
+
+    /** The course, if this user may change it: used by CourseModuleService. */
+    public Course requireManageable(Long id, CurrentUser user) {
+        Course course = findOrThrow(id);
+        requireCanManage(course, user);
+        return course;
     }
 
     private Course findOrThrow(Long id) {

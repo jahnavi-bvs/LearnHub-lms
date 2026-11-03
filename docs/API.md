@@ -189,6 +189,45 @@ Errors: 401, 404 (user deleted after the token was issued).
 
 ---
 
+### Modules - `/api/courses/{id}/modules`
+
+Each course has modules numbered from 1. A module holds a YouTube video and Markdown lesson notes.
+
+**Outline item** (public; no video or notes):
+
+```json
+{ "id": 1, "position": 1, "title": "Introduction to Java and JDK Setup", "description": null, "hasVideo": true }
+```
+
+**Module content** (`youtubeVideoId` is `null` when a video still needs instructor input):
+
+```json
+{ "id": 1, "position": 1, "title": "Introduction to Java and JDK Setup", "description": null,
+  "youtubeVideoId": "4EP8YzcN0hQ", "notes": "### Introduction\nJava is..." }
+```
+
+**Module body** (create and update):
+
+| Field | Rules |
+|---|---|
+| `title` | required, ≤ 200 chars, unique within the course |
+| `description` | optional, ≤ 500 chars |
+| `youtubeUrl` | optional: any YouTube video link or bare id. Invalid values report `errors.youtubeUrlValid` |
+| `notes` | optional Markdown, ≤ 20000 chars |
+
+| Method & path | Who | Success | Notes and errors |
+|---|---|---|---|
+| `GET /api/courses/{id}/modules` | public | 200, array of outline items | A draft course's outline is hidden like the course: 404 |
+| `GET /api/courses/{id}/modules/{moduleId}` | enrolled student, the course's instructor, or ADMIN | 200, content | 401 no token; 403 not enrolled; 404 `Module not found`; 503 `Dependency unavailable` |
+| `POST /api/courses/{id}/modules` | owner or ADMIN | 201, content + `Location` | Added last. 400; 403; 409 `Duplicate module` |
+| `PUT /api/courses/{id}/modules/{moduleId}` | owner or ADMIN | 200, content | **Full replacement**: omitting `youtubeUrl` removes the video. 400; 403; 404; 409 |
+| `DELETE /api/courses/{id}/modules/{moduleId}` | owner or ADMIN | 204 | The remaining modules are renumbered. 403; 404 |
+| `PUT /api/courses/{id}/modules/order` | owner or ADMIN | 200, array of outline items | Body `{"moduleIds": [3, 1, 2]}`, listing every module once. 400 `Invalid module order`; 403 |
+
+Deleting a course also deletes its modules.
+
+---
+
 ## 5. Enrollments - `/api/enrollments`
 
 ### Enrollment object

@@ -7,7 +7,10 @@ import CourseDetailPage from './pages/CourseDetailPage';
 import CourseEditPage from './pages/CourseEditPage';
 import CourseListPage from './pages/CourseListPage';
 import DashboardPage from './pages/DashboardPage';
+import LearnPage from './pages/LearnPage';
 import LoginPage from './pages/LoginPage';
+import ManageModulesPage from './pages/ManageModulesPage';
+import ModuleFormPage from './pages/ModuleFormPage';
 import MyLearningPage from './pages/MyLearningPage';
 import MyQuizzesPage from './pages/MyQuizzesPage';
 import MyResultsPage from './pages/MyResultsPage';
@@ -38,6 +41,8 @@ export default function App() {
         <Route path="/dashboard" element={<RequireAuth><DashboardPage /></RequireAuth>} />
         <Route path="/profile" element={<RequireAuth><ProfilePage /></RequireAuth>} />
         <Route path="/assessments/:id" element={<RequireAuth><AssessmentPage /></RequireAuth>} />
+        <Route path="/courses/:id/learn" element={<RequireAuth><LearnPage /></RequireAuth>} />
+        <Route path="/courses/:id/learn/:moduleId" element={<RequireAuth><LearnPage /></RequireAuth>} />
 
         {/* Student area */}
         <Route path="/my-learning" element={<RequireAuth roles={STUDENTS}><MyLearningPage /></RequireAuth>} />
@@ -50,7 +55,10 @@ export default function App() {
         <Route path="/teaching/students" element={<RequireAuth roles={TEACHERS}><TeachingStudentsPage /></RequireAuth>} />
         <Route path="/teaching/quizzes" element={<RequireAuth roles={TEACHERS}><TeachingQuizzesPage /></RequireAuth>} />
         <Route path="/teaching/courses/:id/edit" element={<RequireAuth roles={TEACHERS}><CourseEditPage /></RequireAuth>} />
-        <Route path="/teaching/courses/:id/quizzes/new" element={<RequireAuth roles={TEACHERS}><QuizBuilderPage /></RequireAuth>} />
+        <Route path="/teaching/courses/:id/modules" element={<RequireAuth roles={TEACHERS}><ManageModulesPage /></RequireAuth>} />
+        <Route path="/teaching/courses/:id/modules/new" element={<RequireAuth roles={TEACHERS}><ModuleFormPage /></RequireAuth>} />
+        <Route path="/teaching/courses/:id/modules/:moduleId/edit" element={<RequireAuth roles={TEACHERS}><ModuleFormPage /></RequireAuth>} />
+        <Route path="/teaching/courses/:id/quizzes/new"element={<RequireAuth roles={TEACHERS}><QuizBuilderPage /></RequireAuth>} />
         <Route path="/teaching/assessments/:id/submissions" element={<RequireAuth roles={TEACHERS}><QuizSubmissionsPage /></RequireAuth>} />
 
         <Route path="*" element={<NotFoundPage />} />

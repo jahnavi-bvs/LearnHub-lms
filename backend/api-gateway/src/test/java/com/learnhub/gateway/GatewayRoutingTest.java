@@ -103,6 +103,15 @@ class GatewayRoutingTest {
     }
 
     @Test
+    void moduleOutline_isPublic_butModuleContentNeedsAToken() throws Exception {
+        mockMvc.perform(get("/api/courses/6/modules"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.path").value("/api/courses/6/modules"));
+        mockMvc.perform(get("/api/courses/6/modules/1"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
     void protectedRoute_withoutToken_isRejectedAtTheEdge() throws Exception {
         mockMvc.perform(get("/api/enrollments/mine"))
                 .andExpect(status().isUnauthorized())

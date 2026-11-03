@@ -1,6 +1,11 @@
 package com.learnhub.course.common;
 
+import com.learnhub.course.client.DependencyUnavailableException;
 import com.learnhub.course.course.CourseNotFoundException;
+import com.learnhub.course.module.DuplicateModuleException;
+import com.learnhub.course.module.InvalidModuleOrderException;
+import com.learnhub.course.module.ModuleNotFoundException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -48,6 +53,43 @@ public class GlobalExceptionHandler {
         ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST,
                 "Invalid value '" + ex.getValue() + "' for parameter '" + ex.getName() + "'");
         problem.setTitle("Invalid parameter");
+        return problem;
+    }
+
+    @ExceptionHandler(ModuleNotFoundException.class)
+    public ProblemDetail handleModuleNotFound(ModuleNotFoundException ex) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
+        problem.setTitle("Module not found");
+        return problem;
+    }
+
+    @ExceptionHandler(DuplicateModuleException.class)
+    public ProblemDetail handleDuplicateModule(DuplicateModuleException ex) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ex.getMessage());
+        problem.setTitle("Duplicate module");
+        return problem;
+    }
+
+    @ExceptionHandler(InvalidModuleOrderException.class)
+    public ProblemDetail handleInvalidOrder(InvalidModuleOrderException ex) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
+        problem.setTitle("Invalid module order");
+        return problem;
+    }
+
+    /** Two identical requests at the same moment: the unique constraint rejects the second. */
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ProblemDetail handleConstraintViolation(DataIntegrityViolationException ex) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT,
+                "The request conflicts with existing data");
+        problem.setTitle("Data conflict");
+        return problem;
+    }
+
+    @ExceptionHandler(DependencyUnavailableException.class)
+    public ProblemDetail handleDependencyDown(DependencyUnavailableException ex) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.SERVICE_UNAVAILABLE, ex.getMessage());
+        problem.setTitle("Dependency unavailable");
         return problem;
     }
 

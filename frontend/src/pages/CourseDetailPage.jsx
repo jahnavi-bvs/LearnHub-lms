@@ -3,6 +3,7 @@ import { Link, useLocation, useParams } from 'react-router-dom';
 import { listAssessmentsForCourse } from '../api/assessments';
 import { courseTags, getCourse } from '../api/courses';
 import { courseRoster, dropEnrollment, enroll, myEnrollments } from '../api/enrollments';
+import { listModules } from '../api/modules';
 import { useAuth } from '../auth/useAuth';
 import { useAsync } from '../hooks/useAsync';
 
@@ -30,6 +31,9 @@ export default function CourseDetailPage() {
     () => (canSeeQuizzes ? listAssessmentsForCourse(courseId, token) : Promise.resolve([])),
     [canSeeQuizzes, courseId, token],
   );
+  // Everyone can see what a course covers; lessons open only for those allowed to watch them
+  const modules = useAsync(() => listModules(courseId, token), [courseId, token]);
+  const canLearn = enrollment != null || canManage;
   // Who is enrolled: only the course's instructor (or an admin) may see this
   const roster = useAsync(
     () => (canManage ? courseRoster(courseId, token) : Promise.resolve([])),
@@ -111,6 +115,7 @@ export default function CourseDetailPage() {
               <p className="alert alert-success">
                 You enrolled on {new Date(enrollment.enrolledAt).toLocaleDateString()}.
               </p>
+              <Link to={`/courses/${courseId}/learn`} className="button">Start learning</Link>
               <button type="button" className="button button-secondary" onClick={handleDrop} disabled={busy}>
                 {busy ? 'Dropping…' : 'Drop course'}
               </button>
@@ -128,12 +133,36 @@ export default function CourseDetailPage() {
               {isOwner ? 'You are the instructor of this course.' : 'Admin view.'}
             </p>
             <Link to={`/teaching/courses/${courseId}/edit`} className="button button-secondary">Edit course</Link>
+            <Link to={`/teaching/courses/${courseId}/modules`} className="button button-secondary">Manage modules</Link>
           </div>
         )}
         {isAuthenticated && !isStudent && !canManage && (
           <p className="muted">Only students can enroll in courses.</p>
         )}
       </div>
+
+      <section>
+        <h2>Course content</h2>
+        {modules.loading && <p className="muted">Loading modules…</p>}
+        {modules.error && <p className="alert alert-error" role="alert">{modules.error.message}</p>}
+        {modules.data && modules.data.length === 0 && <p className="muted">No modules have been added yet.</p>}
+        {modules.data && modules.data.length > 0 && (
+          <>
+            {!canLearn && <p className="muted">Enroll in this course to watch the videos and read the notes.</p>}
+            <ol className="list">
+              {modules.data.map((m) => (
+                <li key={m.id} className="list-item">
+                  {canLearn ? (
+                    <Link to={`/courses/${courseId}/learn/${m.id}`} className="list-title">{m.position}. {m.title}</Link>
+                  ) : (
+                    <span className="list-title">{m.position}. {m.title}</span>
+                  )}
+                </li>
+              ))}
+            </ol>
+          </>
+        )}
+      </section>
 
       {canManage && (
         <section>

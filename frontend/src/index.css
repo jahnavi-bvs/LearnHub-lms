@@ -279,6 +279,15 @@ a {
     padding-left: 16px;
     padding-right: 16px;
   }
+
+  /* The search box takes the leftover width, so the icons always fit */
+  .topbar-actions {
+    width: 100%;
+  }
+
+  .topbar-actions .search {
+    flex: 1 1 0;
+  }
 }
 
 /* Search box and icon buttons */
@@ -789,6 +798,191 @@ section:first-child > .section-title:first-child {
 
 .details dd {
   margin: 0;
+}
+
+/* =========================================================================
+   Learning page: module list, video, notes
+   ========================================================================= */
+.shell-lesson {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.shell-lesson .shell-content {
+  max-width: 1320px;
+}
+
+.learn {
+  display: grid;
+  grid-template-columns: 300px minmax(0, 1fr);
+  gap: 1.75rem;
+  align-items: start;
+}
+
+.learn-sidebar {
+  position: sticky;
+  top: 1rem;
+  max-height: calc(100vh - 2rem);
+  overflow-y: auto;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem;
+}
+
+.learn-back {
+  margin: 0 0 0.75rem;
+  font-size: 0.9rem;
+}
+
+.learn-course {
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+.module-list {
+  list-style: none;
+  margin: 1rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.module-list a {
+  display: flex;
+  gap: 0.6rem;
+  padding: 0.55rem 0.6rem;
+  border-radius: 8px;
+  color: var(--text);
+  text-decoration: none;
+  font-size: 0.92rem;
+}
+
+.module-list a:hover {
+  background: var(--surface-2);
+}
+
+.module-list a.current {
+  background: var(--primary-soft);
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.module-number {
+  flex-shrink: 0;
+  width: 1.5rem;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.module-list a.current .module-number {
+  color: inherit;
+}
+
+.learn-title {
+  margin: 0.15rem 0 1rem;
+  font-size: 1.4rem;
+}
+
+.video-frame {
+  aspect-ratio: 16 / 9;
+  width: 100%;
+  background: #000;
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.video-frame iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.video-message {
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 0.5rem;
+  aspect-ratio: 16 / 9;
+  width: 100%;
+  padding: 1rem;
+  text-align: center;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.video-message p {
+  margin: 0;
+}
+
+.module-nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin: 1rem 0 1.5rem;
+}
+
+.notes {
+  max-width: 80ch;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.25rem 1.5rem;
+}
+
+.notes-heading {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.notes h3:not(.notes-heading) {
+  margin: 1.4rem 0 0.4rem;
+  font-size: 1.05rem;
+}
+
+.notes ul,
+.notes ol {
+  padding-left: 1.3rem;
+}
+
+.notes li {
+  margin-bottom: 0.3rem;
+}
+
+.notes code {
+  font-family: ui-monospace, Consolas, monospace;
+  font-size: 0.9em;
+  background: var(--surface-2);
+  padding: 0.1em 0.3em;
+  border-radius: 4px;
+}
+
+.notes pre {
+  overflow-x: auto;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.8rem 1rem;
+}
+
+.notes pre code {
+  background: none;
+  padding: 0;
+}
+
+/* On narrow screens the module list sits above the video */
+@media (max-width: 960px) {
+  .learn {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .learn-sidebar {
+    position: static;
+    max-height: 320px;
+  }
 }
 
 /* =========================================================================

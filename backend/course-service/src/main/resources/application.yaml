@@ -32,3 +32,8 @@ learnhub:
   jwt:
     secret: ${JWT_SECRET}
     issuer: learnhub-auth
+  # Asked "is this student enrolled?" before showing a module's video and notes
+  services:
+    enrollment-url: http://localhost:8083
+    connect-timeout: 2s
+    read-timeout: 5s

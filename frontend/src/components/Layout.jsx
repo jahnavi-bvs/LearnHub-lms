@@ -1,4 +1,4 @@
-import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { Link, NavLink, Outlet, useMatch, useNavigate } from 'react-router-dom';
 import logoMark from '../assets/logo-mark.png';
 import { useAuth } from '../auth/useAuth';
 import Icon from './Icon';
@@ -61,6 +61,8 @@ function AppShell() {
   const navigate = useNavigate();
   const menu = user.role === 'STUDENT' ? STUDENT_MENU : INSTRUCTOR_MENU;
   const firstName = user.fullName.split(' ')[0];
+  // Inside a lesson the main sidebar goes away: the module list takes its place
+  const inLesson = useMatch('/courses/:id/learn/*') !== null;
 
   function handleLogout() {
     logout();
@@ -68,21 +70,24 @@ function AppShell() {
   }
 
   return (
-    <div className="shell">
-      <aside className="sidebar">
-        <Logo to="/dashboard" />
-        <nav className="sidebar-nav" aria-label="Main">
-          {menu.map((item) => (
-            <NavLink key={item.to} to={item.to} end={item.end}>
-              <Icon name={item.icon} />
-              <span>{item.label}</span>
-            </NavLink>
-          ))}
-        </nav>
-      </aside>
+    <div className={inLesson ? 'shell shell-lesson' : 'shell'}>
+      {!inLesson && (
+        <aside className="sidebar">
+          <Logo to="/dashboard" />
+          <nav className="sidebar-nav" aria-label="Main">
+            {menu.map((item) => (
+              <NavLink key={item.to} to={item.to} end={item.end}>
+                <Icon name={item.icon} />
+                <span>{item.label}</span>
+              </NavLink>
+            ))}
+          </nav>
+        </aside>
+      )}
 
       <div className="shell-main">
         <header className="topbar">
+          {inLesson && <Logo to="/dashboard" />}
           <p className="welcome">
             Welcome, <strong>{firstName}</strong>
           </p>

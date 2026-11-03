@@ -17,7 +17,7 @@ import java.util.Base64;
  * only auth-service can create tokens; this service can only check them.
  */
 @Configuration
-@EnableConfigurationProperties(JwtProperties.class)
+@EnableConfigurationProperties({JwtProperties.class, ServicesProperties.class})
 public class JwtConfig {
 
     private final JwtProperties jwtProperties;
