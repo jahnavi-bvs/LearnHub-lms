@@ -1,4 +1,5 @@
 import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
+import logoMark from '../assets/logo-mark.png';
 import { useAuth } from '../auth/useAuth';
 import Icon from './Icon';
 import SearchBox from './SearchBox';
@@ -25,8 +26,9 @@ const INSTRUCTOR_MENU = [
 function Logo({ to }) {
   return (
     <Link to={to} className="brand">
-      <span className="brand-mark" aria-hidden="true">L</span>
-      LearnHub
+      {/* alt="" because the name is written right beside it */}
+      <img src={logoMark} alt="" className="brand-mark" />
+      <span>Learn<span className="brand-hub">Hub</span></span>
     </Link>
   );
 }
@@ -83,7 +85,6 @@ function AppShell() {
         <header className="topbar">
           <p className="welcome">
             Welcome, <strong>{firstName}</strong>
-            <span className="role-tag">{user.role.toLowerCase()}</span>
           </p>
           <div className="topbar-actions">
             <SearchBox />

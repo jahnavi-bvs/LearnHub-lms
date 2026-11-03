@@ -32,17 +32,17 @@
 }
 
 :root[data-theme='dark'] {
-  --bg: #0f1420;
-  --surface: #171d2b;
-  --surface-2: #1d2433;
-  --text: #e6e9f0;
-  --muted: #9aa3b5;
-  --border: #2a3244;
+  --bg: #121212;
+  --surface: #1e1e1e;
+  --surface-2: #2a2a2a;
+  --text: #ececec;
+  --muted: #a8a8a8;
+  --border: #383838;
   --primary: #7d95ff;
   --primary-hover: #9aadff;
-  --primary-soft: #232c47;
-  --on-primary: #0f1420;
-  --input-bg: #121826;
+  --primary-soft: #2a2d38;
+  --on-primary: #121212;
+  --input-bg: #171717;
   --error-bg: #3a1f24;
   --error-text: #ff9d9d;
   --success-bg: #17332a;
@@ -130,14 +130,14 @@ a {
 }
 
 .brand-mark {
-  display: grid;
-  place-items: center;
-  width: 32px;
-  height: 32px;
-  border-radius: 9px;
-  background: var(--primary);
-  color: var(--on-primary);
-  font-size: 1rem;
+  display: block;
+  height: 30px;
+  width: auto;
+}
+
+/* "Learn" follows the text colour, so it stays readable on the dark theme */
+.brand-hub {
+  color: var(--primary);
 }
 
 .nav {
@@ -237,16 +237,6 @@ a {
   display: flex;
   align-items: center;
   gap: 0.6rem;
-}
-
-.role-tag {
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: capitalize;
-  padding: 0.1rem 0.55rem;
-  border-radius: 999px;
-  background: var(--primary-soft);
-  color: var(--primary);
 }
 
 .topbar-actions {
