@@ -86,6 +86,37 @@ class CourseControllerIntegrationTest {
     }
 
     @Test
+    void categoryAndLevel_areSaved_andReplacedByPut() throws Exception {
+        String body = mockMvc.perform(post("/api/courses").header(HttpHeaders.AUTHORIZATION, token(10, "INSTRUCTOR"))
+                        .contentType(MediaType.APPLICATION_JSON).content("""
+                                {"title": "Physics", "category": "Physics", "level": "Beginner", "published": true}
+                                """))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.category").value("Physics"))
+                .andExpect(jsonPath("$.level").value("Beginner"))
+                .andReturn().getResponse().getContentAsString();
+        long id = ((Number) JsonPath.read(body, "$.id")).longValue();
+
+        mockMvc.perform(put("/api/courses/" + id).header(HttpHeaders.AUTHORIZATION, token(10, "INSTRUCTOR"))
+                        .contentType(MediaType.APPLICATION_JSON).content("""
+                                {"title": "Physics", "category": "Science", "level": "Advanced", "published": true}
+                                """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.category").value("Science"))
+                .andExpect(jsonPath("$.level").value("Advanced"));
+    }
+
+    @Test
+    void unknownLevel_returns400() throws Exception {
+        mockMvc.perform(post("/api/courses").header(HttpHeaders.AUTHORIZATION, token(10, "INSTRUCTOR"))
+                        .contentType(MediaType.APPLICATION_JSON).content("""
+                                {"title": "Physics", "level": "Expert"}
+                                """))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors.level").value("Level must be Beginner, Intermediate or Advanced"));
+    }
+
+    @Test
     void student_cannotCreateCourse_403() throws Exception {
         mockMvc.perform(post("/api/courses").header(HttpHeaders.AUTHORIZATION, token(20, "STUDENT"))
                         .contentType(MediaType.APPLICATION_JSON).content(COURSE_JSON.formatted(true)))

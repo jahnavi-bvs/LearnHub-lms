@@ -12,6 +12,8 @@ export default function CourseForm({ initialValues, submitLabel, submittingLabel
   const [form, setForm] = useState({
     title: initialValues?.title ?? '',
     description: initialValues?.description ?? '',
+    category: initialValues?.category ?? '',
+    level: initialValues?.level ?? '',
     published: initialValues?.published ?? false,
   });
   const [submitting, setSubmitting] = useState(false);
@@ -30,10 +32,12 @@ export default function CourseForm({ initialValues, submitLabel, submittingLabel
     setError(null);
     setFieldErrors({});
     try {
-      // Always send all three fields - PUT replaces the whole course
+      // Always send every field - PUT replaces the whole course
       await onSubmit({
         title: form.title,
         description: form.description.trim() === '' ? null : form.description,
+        category: form.category.trim() === '' ? null : form.category.trim(),
+        level: form.level === '' ? null : form.level,
         published: form.published,
       });
       // On success the page navigates away, so there's nothing to reset here
@@ -51,6 +55,15 @@ export default function CourseForm({ initialValues, submitLabel, submittingLabel
                  error={fieldErrors.title} maxLength={200} />
       <FormField as="textarea" label="Description" name="description" rows={6}
                  value={form.description} onChange={handleChange} error={fieldErrors.description} />
+      <FormField label="Category" name="category" value={form.category} onChange={handleChange}
+                 error={fieldErrors.category} maxLength={100} placeholder="e.g. Programming" />
+      <FormField as="select" label="Level" name="level" value={form.level} onChange={handleChange}
+                 error={fieldErrors.level}>
+        <option value="">Not specified</option>
+        <option value="Beginner">Beginner</option>
+        <option value="Intermediate">Intermediate</option>
+        <option value="Advanced">Advanced</option>
+      </FormField>
       <label className="checkbox">
         <input type="checkbox" name="published" checked={form.published} onChange={handleChange} />
         <span>

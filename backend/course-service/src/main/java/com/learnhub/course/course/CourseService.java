@@ -45,8 +45,8 @@ public class CourseService {
 
     @Transactional
     public CourseResponse create(CourseRequest request, CurrentUser user) {
-        Course course = new Course(request.title().trim(), request.description(), request.isPublishedOrDefault(),
-                user.id(), user.name());
+        Course course = new Course(request.title().trim(), request.description(), request.category(), request.level(),
+                request.isPublishedOrDefault(), user.id(), user.name());
         return CourseResponse.from(courseRepository.save(course));
     }
 
@@ -56,7 +56,8 @@ public class CourseService {
         requireCanManage(course, user);
         // No save() needed: inside a transaction, Hibernate notices the changed fields
         // ("dirty checking") and issues the UPDATE when the transaction commits.
-        course.update(request.title().trim(), request.description(), request.isPublishedOrDefault());
+        course.update(request.title().trim(), request.description(), request.category(), request.level(),
+                request.isPublishedOrDefault());
         return CourseResponse.from(course);
     }
 

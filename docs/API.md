@@ -158,6 +158,8 @@ Errors: 401, 404 (user deleted after the token was issued).
   "id": 6,
   "title": "Java for Beginners",
   "description": "Variables, loops, OOP",
+  "category": "Programming",
+  "level": "Beginner",
   "instructorId": 11,
   "instructorName": "Ira Instructor",
   "published": true,
@@ -172,6 +174,8 @@ Errors: 401, 404 (user deleted after the token was issued).
 |---|---|
 | `title` | required, ≤ 200 chars |
 | `description` | optional, ≤ 5000 chars |
+| `category` | optional, ≤ 100 chars |
+| `level` | optional: `Beginner`, `Intermediate` or `Advanced` |
 | `published` | optional boolean, **defaults to `false` (draft)** |
 
 | Method & path | Who | Success | Notes and errors |

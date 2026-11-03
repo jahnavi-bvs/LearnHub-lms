@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useLocation, useParams } from 'react-router-dom';
 import { listAssessmentsForCourse } from '../api/assessments';
-import { getCourse } from '../api/courses';
+import { courseTags, getCourse } from '../api/courses';
 import { courseRoster, dropEnrollment, enroll, myEnrollments } from '../api/enrollments';
 import { useAuth } from '../auth/useAuth';
 import { useAsync } from '../hooks/useAsync';
@@ -87,6 +87,7 @@ export default function CourseDetailPage() {
         {c.title} {!c.published && <span className="badge">Draft</span>}
       </h1>
       <p className="card-meta">by {c.instructorName}</p>
+      {courseTags(c) && <p className="card-tags">{courseTags(c)}</p>}
       {c.description && <p className="detail-text">{c.description}</p>}
 
       <div className="panel">

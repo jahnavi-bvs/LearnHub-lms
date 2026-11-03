@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { courseTags } from '../api/courses';
 
 /**
  * A course tile. The coloured cover is decorative: its hue is computed from the course id,
@@ -17,6 +18,7 @@ export default function CourseCard({ course }) {
           <Link to={`/courses/${course.id}`} className="stretched-link">{course.title}</Link>
         </h3>
         <p className="card-meta">by {course.instructorName}</p>
+        {courseTags(course) && <p className="card-tags">{courseTags(course)}</p>}
         {course.description && <p className="card-text">{course.description}</p>}
       </div>
     </li>

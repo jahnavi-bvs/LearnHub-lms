@@ -1,5 +1,10 @@
 import { apiRequest } from './client';
 
+/** "Programming · Beginner", or '' if the course has neither (older courses don't). */
+export function courseTags(course) {
+  return [course.category, course.level].filter(Boolean).join(' · ');
+}
+
 /** GET /api/courses - public catalog of published courses, newest first. */
 export function listCourses() {
   return apiRequest('/api/courses');
