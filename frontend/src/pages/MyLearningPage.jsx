@@ -1,23 +1,10 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { getCourse } from '../api/courses';
-import { dropEnrollment, myEnrollments } from '../api/enrollments';
+import { dropEnrollment } from '../api/enrollments';
+import { loadMyCourses } from '../api/myCourses';
 import { useAuth } from '../auth/useAuth';
 import CourseCard from '../components/CourseCard';
 import { useAsync } from '../hooks/useAsync';
-
-/**
- * An enrollment only stores the course title, so each course's details come from course-service.
- * If a course has since been deleted, the card still shows with the saved title.
- */
-async function loadMyCourses(token) {
-  const enrollments = await myEnrollments(token);
-  const courses = await Promise.all(enrollments.map((e) => getCourse(e.courseId, token).catch(() => null)));
-  return enrollments.map((enrollment, i) => ({
-    enrollment,
-    course: courses[i] ?? { id: enrollment.courseId, title: enrollment.courseTitle },
-  }));
-}
 
 export default function MyLearningPage() {
   const { token } = useAuth();

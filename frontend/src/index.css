@@ -421,6 +421,10 @@ section:first-child > .section-title:first-child {
   gap: 0.5rem;
 }
 
+.small-count {
+  font-size: 0.85rem;
+}
+
 .view-link {
   color: var(--primary);
   font-weight: 600;

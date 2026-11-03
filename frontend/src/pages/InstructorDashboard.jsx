@@ -3,6 +3,7 @@ import { listAssessmentsForCourse } from '../api/assessments';
 import { myCourses } from '../api/courses';
 import { courseRoster } from '../api/enrollments';
 import { useAuth } from '../auth/useAuth';
+import CourseCard from '../components/CourseCard';
 import StatCard from '../components/StatCard';
 import { useAsync } from '../hooks/useAsync';
 
@@ -49,32 +50,13 @@ export default function InstructorDashboard() {
             <Link to="/teaching/new" className="button">Create your first course</Link>
           </div>
         ) : (
-          <div className="table-wrap">
-            <table className="table">
-              <thead>
-                <tr>
-                  <th scope="col">Course</th>
-                  <th scope="col">Status</th>
-                  <th scope="col" className="num">Students</th>
-                  <th scope="col" className="num">Quizzes</th>
-                </tr>
-              </thead>
-              <tbody>
-                {rows.map(({ course, roster, quizCount }) => (
-                  <tr key={course.id}>
-                    <td><Link to={`/courses/${course.id}`}>{course.title}</Link></td>
-                    <td>
-                      <span className={course.published ? 'badge badge-published' : 'badge'}>
-                        {course.published ? 'Published' : 'Draft'}
-                      </span>
-                    </td>
-                    <td className="num">{roster.length}</td>
-                    <td className="num">{quizCount}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <ul className="card-grid">
+            {rows.map(({ course, roster, quizCount }) => (
+              <CourseCard key={course.id} course={course} showMeta={false} badge={course.published ? null : 'Draft'}>
+                <span className="muted small-count">{roster.length} students · {quizCount} quizzes</span>
+              </CourseCard>
+            ))}
+          </ul>
         )}
       </section>
     </>
