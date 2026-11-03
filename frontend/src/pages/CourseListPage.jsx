@@ -1,33 +1,60 @@
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { listCourses } from '../api/courses';
+import CourseCard from '../components/CourseCard';
 import { useAsync } from '../hooks/useAsync';
 
+const POPULAR_COUNT = 4;
+
+/** Landing page for visitors, "Browse courses" for logged-in users. Search comes from ?q= in the URL. */
 export default function CourseListPage() {
-  // The loading/error/data pattern now lives in the useAsync hook
   const { data: courses, loading, error } = useAsync(() => listCourses(), []);
+  const [params] = useSearchParams();
+  const query = (params.get('q') ?? '').trim();
 
   if (loading) return <p className="muted">Loading courses…</p>;
   if (error) return <p className="alert alert-error" role="alert">{error.message}</p>;
 
-  return (
-    <section>
-      <h1>Courses</h1>
-      {courses.length === 0 ? (
+  // Filtering in the browser is fine here: the catalog is small and not paginated
+  const needle = query.toLowerCase();
+  const results = needle
+    ? courses.filter((c) =>
+        [c.title, c.description, c.instructorName].some((field) => field?.toLowerCase().includes(needle)))
+    : courses;
+
+  if (query) {
+    return (
+      <section>
+        <h1>Results for “{query}”</h1>
+        <p className="muted">
+          {results.length} course{results.length === 1 ? '' : 's'} found · <Link to="/">Clear search</Link>
+        </p>
+        {results.length > 0 && <ul className="card-grid">{results.map((c) => <CourseCard key={c.id} course={c} />)}</ul>}
+      </section>
+    );
+  }
+
+  if (courses.length === 0) {
+    return (
+      <section>
+        <h1>Courses</h1>
         <p className="muted">No courses have been published yet.</p>
-      ) : (
-        <ul className="card-grid">
-          {/* key lets React track each item between re-renders - use a stable id, not the index */}
-          {courses.map((course) => (
-            <li key={course.id} className="card">
-              <h2 className="card-title">
-                <Link to={`/courses/${course.id}`}>{course.title}</Link>
-              </h2>
-              <p className="card-meta">by {course.instructorName}</p>
-              {course.description && <p className="card-text">{course.description}</p>}
-            </li>
-          ))}
+      </section>
+    );
+  }
+
+  return (
+    <>
+      <section>
+        {/* For now "popular" = newest; Step 22 switches this to most-enrolled */}
+        <h2 className="section-title">Popular now</h2>
+        <ul className="popular-row">
+          {courses.slice(0, POPULAR_COUNT).map((c) => <CourseCard key={c.id} course={c} />)}
         </ul>
-      )}
-    </section>
+      </section>
+      <section>
+        <h2 className="section-title">All courses</h2>
+        <ul className="card-grid">{courses.map((c) => <CourseCard key={c.id} course={c} />)}</ul>
+      </section>
+    </>
   );
 }

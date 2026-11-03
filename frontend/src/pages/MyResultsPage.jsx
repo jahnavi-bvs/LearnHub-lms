@@ -12,7 +12,7 @@ export default function MyResultsPage() {
 
   return (
     <section>
-      <h1>My results</h1>
+      <h1>My scores</h1>
       {results.length === 0 ? (
         <p className="muted">You haven't submitted any quizzes yet.</p>
       ) : (

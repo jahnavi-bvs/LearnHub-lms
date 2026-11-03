@@ -12,7 +12,7 @@ export default function RegisterPage() {
   const [error, setError] = useState(null);
   const [fieldErrors, setFieldErrors] = useState({});
 
-  if (isAuthenticated) return <Navigate to="/" replace />;
+  if (isAuthenticated) return <Navigate to="/dashboard" replace />;
 
   function handleChange(event) {
     setForm({ ...form, [event.target.name]: event.target.value });
@@ -25,7 +25,7 @@ export default function RegisterPage() {
     setFieldErrors({});
     try {
       await register(form); // registers, then logs in
-      navigate('/', { replace: true });
+      navigate('/dashboard', { replace: true });
     } catch (err) {
       setError(err.message);
       setFieldErrors(err.errors ?? {});

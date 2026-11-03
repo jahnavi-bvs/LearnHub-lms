@@ -8,7 +8,7 @@ export default function LoginPage() {
   const navigate = useNavigate();
   const location = useLocation();
   // Where RequireAuth was sending the user before redirecting here
-  const from = location.state?.from?.pathname || '/';
+  const from = location.state?.from?.pathname || '/dashboard';
 
   // Controlled form: the inputs' values live in state
   const [form, setForm] = useState({ email: '', password: '' });
