@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { deleteCourse, myCourses } from '../api/courses';
 import { useAuth } from '../auth/useAuth';
+import CourseCard from '../components/CourseCard';
 import { useAsync } from '../hooks/useAsync';
 
 /** The instructor's own courses, drafts included. */
@@ -39,24 +40,15 @@ export default function TeachingPage() {
       {courses.length === 0 ? (
         <p className="muted">You haven't created any courses yet.</p>
       ) : (
-        <ul className="list">
+        <ul className="card-grid">
           {courses.map((c) => (
-            <li key={c.id} className="list-item">
-              <div>
-                <Link to={`/courses/${c.id}`} className="list-title">{c.title}</Link>{' '}
-                <span className={c.published ? 'badge badge-published' : 'badge'}>
-                  {c.published ? 'Published' : 'Draft'}
-                </span>
-                <p className="muted small">Updated {new Date(c.updatedAt).toLocaleString()}</p>
-              </div>
-              <div className="row-actions">
-                <Link to={`/teaching/courses/${c.id}/edit`} className="button button-secondary">Edit</Link>
-                <button type="button" className="button button-danger"
-                        onClick={() => handleDelete(c)} disabled={deletingId === c.id}>
-                  {deletingId === c.id ? 'Deleting…' : 'Delete'}
-                </button>
-              </div>
-            </li>
+            <CourseCard key={c.id} course={c} showMeta={false} badge={c.published ? null : 'Draft'}>
+              <Link to={`/teaching/courses/${c.id}/edit`} className="button button-secondary">Edit</Link>
+              <button type="button" className="button button-danger"
+                      onClick={() => handleDelete(c)} disabled={deletingId === c.id}>
+                {deletingId === c.id ? 'Deleting…' : 'Delete'}
+              </button>
+            </CourseCard>
           ))}
         </ul>
       )}

@@ -1,25 +1,28 @@
 import { Link } from 'react-router-dom';
 import { courseTags } from '../api/courses';
+import CourseCover from './CourseCover';
 
 /**
- * A course tile. The coloured cover is decorative: its hue is computed from the course id,
- * so each course keeps the same colour (there are no course images in the backend).
+ * Box card: picture, title, description, "View course".
+ * @param showMeta show the instructor and category line (catalog yes, My courses no)
+ * @param badge    optional label over the picture, e.g. Draft
+ * @param children optional page-specific buttons beside "View course"
  */
-export default function CourseCard({ course }) {
-  const hue = (course.id * 47) % 360;
+export default function CourseCard({ course, showMeta = true, badge, children }) {
+  const url = `/courses/${course.id}`;
   return (
     <li className="card course-card">
-      <div className="course-cover" style={{ '--hue': hue }} aria-hidden="true">
-        {course.title.charAt(0).toUpperCase()}
-      </div>
+      <CourseCover course={course} />
+      {badge && <span className="course-badge">{badge}</span>}
       <div className="course-body">
-        <h3 className="card-title">
-          {/* The ::after on this link makes the whole card clickable */}
-          <Link to={`/courses/${course.id}`} className="stretched-link">{course.title}</Link>
-        </h3>
-        <p className="card-meta">by {course.instructorName}</p>
-        {courseTags(course) && <p className="card-tags">{courseTags(course)}</p>}
+        <h3 className="card-title"><Link to={url}>{course.title}</Link></h3>
+        {showMeta && <p className="card-meta">by {course.instructorName}</p>}
+        {showMeta && courseTags(course) && <p className="card-tags">{courseTags(course)}</p>}
         {course.description && <p className="card-text">{course.description}</p>}
+        <div className="course-footer">
+          <Link to={url} className="view-link">View course</Link>
+          {children && <div className="row-actions">{children}</div>}
+        </div>
       </div>
     </li>
   );

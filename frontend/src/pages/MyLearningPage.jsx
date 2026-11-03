@@ -1,13 +1,28 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { getCourse } from '../api/courses';
 import { dropEnrollment, myEnrollments } from '../api/enrollments';
 import { useAuth } from '../auth/useAuth';
+import CourseCard from '../components/CourseCard';
 import { useAsync } from '../hooks/useAsync';
+
+/**
+ * An enrollment only stores the course title, so each course's details come from course-service.
+ * If a course has since been deleted, the card still shows with the saved title.
+ */
+async function loadMyCourses(token) {
+  const enrollments = await myEnrollments(token);
+  const courses = await Promise.all(enrollments.map((e) => getCourse(e.courseId, token).catch(() => null)));
+  return enrollments.map((enrollment, i) => ({
+    enrollment,
+    course: courses[i] ?? { id: enrollment.courseId, title: enrollment.courseTitle },
+  }));
+}
 
 export default function MyLearningPage() {
   const { token } = useAuth();
-  const { data: enrollments, loading, error, reload } = useAsync(() => myEnrollments(token), [token]);
-  const [droppingId, setDroppingId] = useState(null); // which row's button is busy
+  const { data: rows, loading, error, reload } = useAsync(() => loadMyCourses(token), [token]);
+  const [droppingId, setDroppingId] = useState(null); // which card's button is busy
   const [actionError, setActionError] = useState(null);
 
   async function handleDrop(enrollment) {
@@ -29,25 +44,21 @@ export default function MyLearningPage() {
 
   return (
     <section>
-      <h1>My learning</h1>
+      <h1>My courses</h1>
       {actionError && <p className="alert alert-error" role="alert">{actionError}</p>}
-      {enrollments.length === 0 ? (
+      {rows.length === 0 ? (
         <p className="muted">
           You are not enrolled in any courses yet. <Link to="/">Browse courses</Link>
         </p>
       ) : (
-        <ul className="list">
-          {enrollments.map((e) => (
-            <li key={e.id} className="list-item">
-              <div>
-                <Link to={`/courses/${e.courseId}`} className="list-title">{e.courseTitle}</Link>
-                <p className="muted small">Enrolled {new Date(e.enrolledAt).toLocaleDateString()}</p>
-              </div>
+        <ul className="card-grid">
+          {rows.map(({ enrollment, course }) => (
+            <CourseCard key={enrollment.id} course={course} showMeta={false}>
               <button type="button" className="button button-secondary"
-                      onClick={() => handleDrop(e)} disabled={droppingId === e.id}>
-                {droppingId === e.id ? 'Dropping…' : 'Drop'}
+                      onClick={() => handleDrop(enrollment)} disabled={droppingId === enrollment.id}>
+                {droppingId === enrollment.id ? 'Dropping…' : 'Drop'}
               </button>
-            </li>
+            </CourseCard>
           ))}
         </ul>
       )}

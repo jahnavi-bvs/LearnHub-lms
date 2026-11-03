@@ -370,7 +370,7 @@ section:first-child > .section-title:first-child {
 }
 
 .course-card {
-  position: relative; /* anchor for .stretched-link */
+  position: relative; /* anchor for .course-badge */
   padding: 0;
   overflow: hidden;
   display: flex;
@@ -386,15 +386,46 @@ section:first-child > .section-title:first-child {
 .course-cover {
   display: grid;
   place-items: center;
-  height: 96px;
-  font-size: 2.25rem;
-  font-weight: 700;
+  height: 140px;
+  flex-shrink: 0;
   color: #fff;
-  background: linear-gradient(135deg, hsl(var(--hue) 65% 52%), hsl(calc(var(--hue) + 40) 65% 42%));
+}
+
+.course-badge {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.6rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.15rem 0.55rem;
+  border-radius: 999px;
+  background: var(--warning-bg);
+  color: var(--warning-text);
 }
 
 .course-body {
-  padding: 1rem 1.1rem 1.2rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem 1.1rem 1.1rem;
+}
+
+/* margin-top: auto keeps the footer on the bottom line, even when descriptions differ in length */
+.course-footer {
+  margin-top: auto;
+  padding-top: 0.9rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.view-link {
+  color: var(--primary);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
 /* Makes a whole card clickable through its one real link */
