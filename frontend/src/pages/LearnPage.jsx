@@ -128,6 +128,12 @@ export default function LearnPage() {
               </article>
             )}
 
+            {progressList.error && (
+              <p className="alert alert-error complete-row" role="alert">
+                Your progress couldn't be loaded, so Mark as complete isn't available right now.
+              </p>
+            )}
+
             {/* At the very end of the lesson: after the video and the notes */}
             {progress && (
               <div className="complete-row">
