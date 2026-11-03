@@ -175,6 +175,57 @@ class ProgressIntegrationTest {
     }
 
     @Test
+    void progressIsSeparateForEachStudent() throws Exception {
+        long otherStudent = 903L;
+        String body = mockMvc.perform(post("/api/enrollments").header(HttpHeaders.AUTHORIZATION, token(otherStudent, "STUDENT"))
+                        .contentType(MediaType.APPLICATION_JSON).content("{\"courseId\": " + COURSE + "}"))
+                .andExpect(status().isCreated())
+                .andReturn().getResponse().getContentAsString();
+        long otherEnrollment = ((Number) JsonPath.read(body, "$.id")).longValue();
+        try {
+            mark(1);
+
+            mockMvc.perform(get("/api/enrollments/mine/progress").header(HttpHeaders.AUTHORIZATION, token(otherStudent, "STUDENT")))
+                    .andExpect(jsonPath("$[0].percentage").value(0));
+            mockMvc.perform(get("/api/enrollments/mine/progress").header(HttpHeaders.AUTHORIZATION, token(STUDENT, "STUDENT")))
+                    .andExpect(jsonPath("$[0].percentage").value(25));
+        } finally {
+            enrollmentRepository.deleteById(otherEnrollment);
+        }
+    }
+
+    @Test
+    void progressIsSeparateForEachCourse() throws Exception {
+        long otherCourse = 501L;
+        when(courseClient.findCourse(eq(otherCourse), isNull()))
+                .thenReturn(Optional.of(new CourseSummary(otherCourse, "Other", 11L, "Ira", true)));
+        when(courseClient.findModuleIds(eq(otherCourse), anyString())).thenReturn(List.of(7L, 8L));
+        String body = mockMvc.perform(post("/api/enrollments").header(HttpHeaders.AUTHORIZATION, token(STUDENT, "STUDENT"))
+                        .contentType(MediaType.APPLICATION_JSON).content("{\"courseId\": " + otherCourse + "}"))
+                .andExpect(status().isCreated())
+                .andReturn().getResponse().getContentAsString();
+        long otherEnrollment = ((Number) JsonPath.read(body, "$.id")).longValue();
+        try {
+            mark(1);
+
+            mockMvc.perform(get("/api/enrollments/mine/progress").header(HttpHeaders.AUTHORIZATION, token(STUDENT, "STUDENT")))
+                    .andExpect(jsonPath("$[?(@.courseId == " + COURSE + ")].percentage").value(25))
+                    .andExpect(jsonPath("$[?(@.courseId == " + otherCourse + ")].percentage").value(0));
+        } finally {
+            enrollmentRepository.deleteById(otherEnrollment);
+        }
+    }
+
+    @Test
+    void percentageIsCompletedDividedByTotalTimes100() throws Exception {
+        when(courseClient.findModuleIds(eq(COURSE), anyString())).thenReturn(List.of(1L, 2L, 3L));
+
+        mark(1).andExpect(jsonPath("$.percentage").value(33)); // 33.33 rounds down
+        mark(2).andExpect(jsonPath("$.percentage").value(67)); // 66.67 rounds up
+        mark(3).andExpect(jsonPath("$.percentage").value(100));
+    }
+
+    @Test
     void deletedModule_noLongerCounts() throws Exception {
         mark(1);
         mark(4);

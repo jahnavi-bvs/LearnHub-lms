@@ -1,4 +1,4 @@
-import { Link, NavLink, Outlet, useMatch, useNavigate } from 'react-router-dom';
+import { Link, NavLink, Outlet, useMatch } from 'react-router-dom';
 import logoMark from '../assets/logo-mark.png';
 import { useAuth } from '../auth/useAuth';
 import Icon from './Icon';
@@ -58,7 +58,6 @@ function PublicLayout() {
 /** Logged-in users: sidebar + top bar (student and instructor sketches). */
 function AppShell() {
   const { user, logout } = useAuth();
-  const navigate = useNavigate();
   const menu = user.role === 'STUDENT' ? STUDENT_MENU : INSTRUCTOR_MENU;
   const firstName = user.fullName.split(' ')[0];
   // Inside a lesson the main sidebar goes away: the module list takes its place
@@ -66,7 +65,9 @@ function AppShell() {
 
   function handleLogout() {
     logout();
-    navigate('/');
+    // A full reload, not navigate(): on a protected page RequireAuth would otherwise redirect first
+    // and remember this page, sending the next person to log in here. It also clears loaded data.
+    window.location.assign('/');
   }
 
   return (

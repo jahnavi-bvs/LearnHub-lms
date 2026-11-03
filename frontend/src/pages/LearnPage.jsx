@@ -113,17 +113,6 @@ export default function LearnPage() {
               </div>
             )}
 
-            {progress && (
-              <div className="complete-row">
-                <button type="button" className={isDone(selectedId) ? 'button button-done' : 'button'}
-                        onClick={toggleComplete} disabled={saving} aria-pressed={isDone(selectedId)}>
-                  {isDone(selectedId) ? <><Icon name="check" size={18} /> Completed</> : 'Mark as complete'}
-                </button>
-                {isDone(selectedId) && <span className="muted small-count">Click again to undo</span>}
-                {saveError && <span className="field-error" role="alert">{saveError}</span>}
-              </div>
-            )}
-
             <nav className="module-nav" aria-label="Previous and next module">
               {previous
                 ? <Link to={lesson(previous)} className="button button-secondary">← Previous module</Link>
@@ -137,6 +126,18 @@ export default function LearnPage() {
                 {/* Notes are Markdown from the database. react-markdown doesn't render raw HTML */}
                 <Markdown>{content.data.notes}</Markdown>
               </article>
+            )}
+
+            {/* At the very end of the lesson: after the video and the notes */}
+            {progress && (
+              <div className="complete-row">
+                <button type="button" className={isDone(selectedId) ? 'button button-done' : 'button'}
+                        onClick={toggleComplete} disabled={saving} aria-pressed={isDone(selectedId)}>
+                  {isDone(selectedId) ? <><Icon name="check" size={18} /> Completed</> : 'Mark as complete'}
+                </button>
+                {isDone(selectedId) && <span className="muted small-count">Click again to undo</span>}
+                {saveError && <span className="field-error" role="alert">{saveError}</span>}
+              </div>
             )}
           </>
         )}
