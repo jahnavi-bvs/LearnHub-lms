@@ -1,8 +1,12 @@
+import { useState } from 'react';
 import Markdown from 'react-markdown';
 import { Link, NavLink, useParams } from 'react-router-dom';
 import { getCourse } from '../api/courses';
+import { markModuleComplete, markModuleIncomplete, myProgress } from '../api/enrollments';
 import { getModule, listModules } from '../api/modules';
 import { useAuth } from '../auth/useAuth';
+import Icon from '../components/Icon';
+import ProgressBar from '../components/ProgressBar';
 import YouTubePlayer from '../components/YouTubePlayer';
 import { useAsync } from '../hooks/useAsync';
 
@@ -10,7 +14,18 @@ import { useAsync } from '../hooks/useAsync';
 export default function LearnPage() {
   const { id, moduleId } = useParams();
   const courseId = Number(id);
-  const { token } = useAuth();
+  const { user, token } = useAuth();
+  const isStudent = user.role === 'STUDENT';
+
+  const progressList = useAsync(
+    () => (isStudent ? myProgress(token) : Promise.resolve([])),
+    [isStudent, token],
+  );
+  // The server's answer after clicking the button replaces what was first loaded
+  const [updatedProgress, setUpdatedProgress] = useState(null);
+  const progress = updatedProgress ?? progressList.data?.find((p) => p.courseId === courseId) ?? null;
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState(null);
 
   const course = useAsync(() => getCourse(courseId, token), [courseId, token]);
   const outline = useAsync(() => listModules(courseId, token), [courseId, token]);
@@ -31,6 +46,20 @@ export default function LearnPage() {
   const previous = modules[index - 1];
   const next = index >= 0 ? modules[index + 1] : undefined;
   const lesson = (m) => `/courses/${courseId}/learn/${m.id}`;
+  const isDone = (id) => progress?.completedModuleIds.includes(id) ?? false;
+
+  async function toggleComplete() {
+    setSaving(true);
+    setSaveError(null);
+    try {
+      const change = isDone(selectedId) ? markModuleIncomplete : markModuleComplete;
+      setUpdatedProgress(await change(progress.enrollmentId, selectedId, token));
+    } catch (err) {
+      setSaveError(err.message);
+    } finally {
+      setSaving(false);
+    }
+  }
 
   return (
     <div className="learn">
@@ -38,6 +67,7 @@ export default function LearnPage() {
         <p className="learn-back"><Link to={`/courses/${courseId}`}>← Course details</Link></p>
         <h1 className="learn-course">{course.data.title}</h1>
         {course.data.description && <p className="muted small">{course.data.description}</p>}
+        {progress && <ProgressBar progress={progress} />}
         <nav aria-label="Course modules">
           <ol className="module-list">
             {modules.map((m) => (
@@ -46,7 +76,10 @@ export default function LearnPage() {
                 <NavLink to={lesson(m)} className={m.id === selectedId ? 'current' : undefined}
                          aria-current={m.id === selectedId ? 'page' : undefined}>
                   <span className="module-number">{m.position}</span>
-                  <span>{m.title}</span>
+                  <span className="module-name">{m.title}</span>
+                  {isDone(m.id) && (
+                    <span className="done-mark" title="Completed"><Icon name="check" size={16} /><span className="sr-only">Completed</span></span>
+                  )}
                 </NavLink>
               </li>
             ))}
@@ -77,6 +110,17 @@ export default function LearnPage() {
             ) : (
               <div className="video-message">
                 <p>A video for this module hasn't been added yet.</p>
+              </div>
+            )}
+
+            {progress && (
+              <div className="complete-row">
+                <button type="button" className={isDone(selectedId) ? 'button button-done' : 'button'}
+                        onClick={toggleComplete} disabled={saving} aria-pressed={isDone(selectedId)}>
+                  {isDone(selectedId) ? <><Icon name="check" size={18} /> Completed</> : 'Mark as complete'}
+                </button>
+                {isDone(selectedId) && <span className="muted small-count">Click again to undo</span>}
+                {saveError && <span className="field-error" role="alert">{saveError}</span>}
               </div>
             )}
 

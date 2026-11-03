@@ -2,6 +2,7 @@ package com.learnhub.enrollment.enrollment;
 
 import com.learnhub.enrollment.client.CourseClient;
 import com.learnhub.enrollment.client.CourseSummary;
+import com.learnhub.enrollment.progress.ModuleCompletionRepository;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
@@ -14,10 +15,13 @@ public class EnrollmentService {
 
     private final EnrollmentRepository enrollmentRepository;
     private final CourseClient courseClient;
+    private final ModuleCompletionRepository completionRepository;
 
-    public EnrollmentService(EnrollmentRepository enrollmentRepository, CourseClient courseClient) {
+    public EnrollmentService(EnrollmentRepository enrollmentRepository, CourseClient courseClient,
+                             ModuleCompletionRepository completionRepository) {
         this.enrollmentRepository = enrollmentRepository;
         this.courseClient = courseClient;
+        this.completionRepository = completionRepository;
     }
 
     /**
@@ -76,6 +80,8 @@ public class EnrollmentService {
         if (!user.isAdmin() && !enrollment.getStudentId().equals(user.id())) {
             throw new AccessDeniedException("You can only cancel your own enrollments");
         }
+        // Children first: completions reference the enrollment through a foreign key
+        completionRepository.deleteByEnrollmentId(enrollmentId);
         enrollmentRepository.delete(enrollment);
     }
 }

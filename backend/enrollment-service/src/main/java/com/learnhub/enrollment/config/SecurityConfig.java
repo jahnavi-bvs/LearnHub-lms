@@ -31,7 +31,9 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.POST, "/api/enrollments").hasRole("STUDENT")
-                        .requestMatchers(HttpMethod.GET, "/api/enrollments/mine").hasRole("STUDENT")
+                        .requestMatchers(HttpMethod.GET, "/api/enrollments/mine", "/api/enrollments/mine/progress").hasRole("STUDENT")
+                        // "is it YOUR enrollment?" is checked in ProgressService
+                        .requestMatchers("/api/enrollments/{id}/completed-modules/{moduleId}").hasRole("STUDENT")
                         // "is it YOUR course?" is checked by asking course-service
                         .requestMatchers(HttpMethod.GET, "/api/enrollments/course/{courseId}").hasAnyRole("INSTRUCTOR", "ADMIN")
                         // "is it YOUR enrollment?" is checked in EnrollmentService

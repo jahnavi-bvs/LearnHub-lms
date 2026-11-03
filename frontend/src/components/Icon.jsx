@@ -15,6 +15,8 @@ const PATHS = {
   logout: 'M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4 M16 17l5-5-5-5 M21 12H9',
   search: 'M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16 M21 21l-4.35-4.35',
   chevron: 'M9 18l6-6-6-6',
+  arrow: 'M5 12h14 M13 6l6 6-6 6',
+  check: 'M20 6L9 17l-5-5',
   // Course cover icons
   cup: 'M17 8h1a4 4 0 0 1 0 8h-1 M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4z M6 1v3 M10 1v3 M14 1v3',
   terminal: 'M4 17l6-6-6-6 M12 19h8',

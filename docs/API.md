@@ -250,7 +250,23 @@ Deleting a course also deletes its modules.
 | `POST /api/enrollments` | STUDENT | 201, enrollment + `Location` | Body `{"courseId": 6}`. 400 `Validation failed`; 404 `Course not found` (missing **or a draft**); 409 `Already enrolled`; 503 `Dependency unavailable` |
 | `GET /api/enrollments/mine` | STUDENT | 200, array | Newest first |
 | `GET /api/enrollments/course/{courseId}` | that course's instructor, or ADMIN | 200, array | The roster, oldest first. 403, 404, 503 |
-| `DELETE /api/enrollments/{id}` | the enrolled student, or ADMIN | 204 | Drops the course. 403, 404 |
+| `DELETE /api/enrollments/{id}` | the enrolled student, or ADMIN | 204 | Drops the course and deletes its progress. 403, 404 |
+
+### Progress
+
+**Progress object:** `percentage` is calculated from the course's current modules. `nextModuleId` is the first
+module not yet completed, or `null` when none remain.
+
+```json
+{ "enrollmentId": 9, "courseId": 6, "completedModuleIds": [1, 2], "completedCount": 2, "totalModules": 8,
+  "percentage": 25, "nextModuleId": 3 }
+```
+
+| Method & path | Who | Success | Notes and errors |
+|---|---|---|---|
+| `GET /api/enrollments/mine/progress` | STUDENT | 200, array | One per enrollment. 503 if course-service is down |
+| `PUT /api/enrollments/{id}/completed-modules/{moduleId}` | the enrolled student | 200, progress | Marks as complete; safe to repeat. 403; 404 `Module not found` (not in this course); 503 |
+| `DELETE /api/enrollments/{id}/completed-modules/{moduleId}` | the enrolled student | 200, progress | Undoes it. 403, 404 |
 
 ---
 

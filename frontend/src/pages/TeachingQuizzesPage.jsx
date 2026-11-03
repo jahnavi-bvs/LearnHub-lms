@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { listAssessmentsForCourse } from '../api/assessments';
 import { myCourses } from '../api/courses';
 import { useAuth } from '../auth/useAuth';
+import ArrowLink from '../components/ArrowLink';
 import { useAsync } from '../hooks/useAsync';
 
 async function loadQuizzes(token) {
@@ -43,10 +44,13 @@ export default function TeachingQuizzesPage() {
               {quizzes.map((quiz) => (
                 <li key={quiz.id} className="list-item">
                   <div>
-                    <Link to={`/assessments/${quiz.id}`} className="list-title">{quiz.title}</Link>
+                    <span className="list-title">{quiz.title}</span>
                     <p className="muted small">{quiz.questionCount} questions</p>
                   </div>
-                  <Link to={`/teaching/assessments/${quiz.id}/submissions`}>Submissions</Link>
+                  <span className="row-actions">
+                    <Link to={`/teaching/assessments/${quiz.id}/submissions`}>Submissions</Link>
+                    <ArrowLink to={`/assessments/${quiz.id}`} label={`Open ${quiz.title}`} />
+                  </span>
                 </li>
               ))}
             </ul>

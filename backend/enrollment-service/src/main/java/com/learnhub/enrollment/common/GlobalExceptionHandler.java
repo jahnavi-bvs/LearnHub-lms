@@ -4,6 +4,7 @@ import com.learnhub.enrollment.client.CourseServiceUnavailableException;
 import com.learnhub.enrollment.enrollment.AlreadyEnrolledException;
 import com.learnhub.enrollment.enrollment.CourseNotFoundException;
 import com.learnhub.enrollment.enrollment.EnrollmentNotFoundException;
+import com.learnhub.enrollment.progress.ModuleNotInCourseException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -61,6 +62,13 @@ public class GlobalExceptionHandler {
     public ProblemDetail handleEnrollmentNotFound(EnrollmentNotFoundException ex) {
         ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
         problem.setTitle("Enrollment not found");
+        return problem;
+    }
+
+    @ExceptionHandler(ModuleNotInCourseException.class)
+    public ProblemDetail handleModuleNotInCourse(ModuleNotInCourseException ex) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
+        problem.setTitle("Module not found");
         return problem;
     }
 

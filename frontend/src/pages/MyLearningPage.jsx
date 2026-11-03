@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { dropEnrollment } from '../api/enrollments';
-import { loadMyCourses } from '../api/myCourses';
+import { loadMyCourses, nextStep } from '../api/myCourses';
 import { useAuth } from '../auth/useAuth';
 import CourseCard from '../components/CourseCard';
 import { useAsync } from '../hooks/useAsync';
@@ -13,7 +13,7 @@ export default function MyLearningPage() {
   const [actionError, setActionError] = useState(null);
 
   async function handleDrop(enrollment) {
-    if (!window.confirm(`Drop "${enrollment.courseTitle}"?`)) return;
+    if (!window.confirm(`Drop "${enrollment.courseTitle}"? Your progress in this course will be lost.`)) return;
     setDroppingId(enrollment.id);
     setActionError(null);
     try {
@@ -39,8 +39,9 @@ export default function MyLearningPage() {
         </p>
       ) : (
         <ul className="card-grid">
-          {rows.map(({ enrollment, course }) => (
-            <CourseCard key={enrollment.id} course={course} showMeta={false}>
+          {rows.map(({ enrollment, course, progress }) => (
+            <CourseCard key={enrollment.id} course={course} showMeta={false} progress={progress}
+                        link={nextStep(course.id, progress)}>
               <button type="button" className="button button-secondary"
                       onClick={() => handleDrop(enrollment)} disabled={droppingId === enrollment.id}>
                 {droppingId === enrollment.id ? 'Dropping…' : 'Drop'}

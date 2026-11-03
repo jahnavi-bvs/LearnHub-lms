@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { mySubmissions } from '../api/assessments';
-import { loadMyCourses } from '../api/myCourses';
+import { loadMyCourses, nextStep } from '../api/myCourses';
 import { useAuth } from '../auth/useAuth';
 import CourseCard from '../components/CourseCard';
 import StatCard from '../components/StatCard';
@@ -45,8 +45,9 @@ export default function StudentDashboard() {
           </div>
         ) : (
           <ul className="card-grid">
-            {rows.slice(0, CONTINUE_LEARNING_COUNT).map(({ enrollment, course }) => (
-              <CourseCard key={enrollment.id} course={course} showMeta={false} />
+            {rows.slice(0, CONTINUE_LEARNING_COUNT).map(({ enrollment, course, progress }) => (
+              <CourseCard key={enrollment.id} course={course} showMeta={false} progress={progress}
+                          link={nextStep(course.id, progress)} />
             ))}
           </ul>
         )}

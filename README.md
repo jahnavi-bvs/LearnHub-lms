@@ -37,7 +37,7 @@ React :5173 ───► │ CORS · JWT check at the edge · routing · 503 whe
 | Gateway | Spring Cloud Gateway Server WebMVC (Spring Cloud 2025.1) |
 | Database | MySQL 8.0 |
 | Frontend | React 19, React Router 7, Vite 8, plain CSS |
-| Tests | JUnit 5, Mockito, MockMvc, MockRestServiceServer (98 backend tests) |
+| Tests | JUnit 5, Mockito, MockMvc, MockRestServiceServer (110 backend tests) |
 
 ## Prerequisites
 
@@ -92,14 +92,15 @@ npm install
 
 ### 4. Course catalog (optional)
 
-To load the 15 courses and their 117 modules (YouTube videos and lesson notes):
+To load the 15 courses, their 117 modules (YouTube videos and lesson notes) and 45 quizzes:
 
 1. Register the instructor accounts listed in `backend/seed/courses.sql`.
-2. Start `course-service` once, so Hibernate creates its tables.
-3. Run both scripts. They are safe to run more than once:
+2. Start `course-service` and `assessment-service` once, so Hibernate creates their tables.
+3. Run the scripts. They are safe to run more than once:
    ```powershell
    mysql -u learnhub -p --default-character-set=utf8mb4 -e "source backend/seed/courses.sql"
    mysql -u learnhub -p --default-character-set=utf8mb4 -e "source backend/seed/modules.sql"
+   mysql -u learnhub -p --default-character-set=utf8mb4 -e "source backend/seed/quizzes.sql"
    ```
 
 Lesson content lives in `backend/seed/course-content/*.md`. After editing it, rebuild the SQL with
@@ -125,7 +126,7 @@ Register an **Instructor** to create courses and quizzes, and a **Student** to e
 
 ```powershell
 cd backend
-.\mvnw.cmd test          # all 98 tests in all five services (uses the *_test databases)
+.\mvnw.cmd test          # all 110 tests in all five services (uses the *_test databases)
 
 cd ..\frontend
 npm run lint

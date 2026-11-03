@@ -2,9 +2,13 @@ import { useState } from 'react';
 import { Link, useLocation, useParams } from 'react-router-dom';
 import { listAssessmentsForCourse } from '../api/assessments';
 import { courseTags, getCourse } from '../api/courses';
-import { courseRoster, dropEnrollment, enroll, myEnrollments } from '../api/enrollments';
+import { courseRoster, dropEnrollment, enroll, myEnrollments, myProgress } from '../api/enrollments';
+import { nextStep } from '../api/myCourses';
 import { listModules } from '../api/modules';
 import { useAuth } from '../auth/useAuth';
+import ArrowLink from '../components/ArrowLink';
+import Icon from '../components/Icon';
+import ProgressBar from '../components/ProgressBar';
 import { useAsync } from '../hooks/useAsync';
 
 export default function CourseDetailPage() {
@@ -34,6 +38,12 @@ export default function CourseDetailPage() {
   // Everyone can see what a course covers; lessons open only for those allowed to watch them
   const modules = useAsync(() => listModules(courseId, token), [courseId, token]);
   const canLearn = enrollment != null || canManage;
+  const progressList = useAsync(
+    () => (enrollment ? myProgress(token) : Promise.resolve([])),
+    [enrollment?.id, token],
+  );
+  const progress = progressList.data?.find((p) => p.courseId === courseId) ?? null;
+  const step = nextStep(courseId, progress);
   // Who is enrolled: only the course's instructor (or an admin) may see this
   const roster = useAsync(
     () => (canManage ? courseRoster(courseId, token) : Promise.resolve([])),
@@ -57,7 +67,7 @@ export default function CourseDetailPage() {
   }
 
   async function handleDrop() {
-    if (!window.confirm(`Drop "${course.data.title}"? You can enroll again later.`)) return;
+    if (!window.confirm(`Drop "${course.data.title}"? You can enroll again later, but your progress will be lost.`)) return;
     setBusy(true);
     setActionError(null);
     try {
@@ -115,7 +125,9 @@ export default function CourseDetailPage() {
               <p className="alert alert-success">
                 You enrolled on {new Date(enrollment.enrolledAt).toLocaleDateString()}.
               </p>
-              <Link to={`/courses/${courseId}/learn`} className="button">Start learning</Link>
+              <Link to={step.to.includes('/learn') ? step.to : `/courses/${courseId}/learn`} className="button">
+                {step.to.includes('/learn') ? step.label : 'Start learning'}
+              </Link>
               <button type="button" className="button button-secondary" onClick={handleDrop} disabled={busy}>
                 {busy ? 'Dropping…' : 'Drop course'}
               </button>
@@ -126,6 +138,8 @@ export default function CourseDetailPage() {
             </button>
           )
         )}
+
+        {isStudent && enrollment && progress && <ProgressBar progress={progress} />}
 
         {canManage && (
           <div className="panel-row">
@@ -152,11 +166,13 @@ export default function CourseDetailPage() {
             <ol className="list">
               {modules.data.map((m) => (
                 <li key={m.id} className="list-item">
-                  {canLearn ? (
-                    <Link to={`/courses/${courseId}/learn/${m.id}`} className="list-title">{m.position}. {m.title}</Link>
-                  ) : (
-                    <span className="list-title">{m.position}. {m.title}</span>
-                  )}
+                  <span className="list-title">{m.position}. {m.title}</span>
+                  <span className="row-actions">
+                    {progress?.completedModuleIds.includes(m.id) && (
+                      <span className="done-mark" title="Completed"><Icon name="check" size={18} /><span className="sr-only">Completed</span></span>
+                    )}
+                    {canLearn && <ArrowLink to={`/courses/${courseId}/learn/${m.id}`} label={`Open ${m.title}`} />}
+                  </span>
                 </li>
               ))}
             </ol>
@@ -200,10 +216,13 @@ export default function CourseDetailPage() {
             <ul className="list">
               {assessments.data.map((a) => (
                 <li key={a.id} className="list-item">
-                  <Link to={`/assessments/${a.id}`} className="list-title">{a.title}</Link>
+                  <span>
+                    <span className="list-title">{a.title}</span>
+                    <span className="muted small-block">{a.questionCount} questions</span>
+                  </span>
                   <span className="row-actions">
-                    <span className="muted">{a.questionCount} questions</span>
                     {canManage && <Link to={`/teaching/assessments/${a.id}/submissions`}>Submissions</Link>}
+                    <ArrowLink to={`/assessments/${a.id}`} label={`Open ${a.title}`} />
                   </span>
                 </li>
               ))}

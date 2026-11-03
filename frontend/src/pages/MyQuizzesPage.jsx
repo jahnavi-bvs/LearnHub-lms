@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { listAssessmentsForCourse, mySubmissions } from '../api/assessments';
 import { myEnrollments } from '../api/enrollments';
 import { useAuth } from '../auth/useAuth';
+import ArrowLink from '../components/ArrowLink';
 import { useAsync } from '../hooks/useAsync';
 
 /** Every quiz in every enrolled course, marked "taken" (with score) or "not taken". */
@@ -54,13 +55,10 @@ export default function MyQuizzesPage() {
                       <span className="list-title">{quiz.title}</span>
                       <p className="muted small">{quiz.questionCount} questions</p>
                     </div>
-                    {result ? (
-                      <Link to={`/assessments/${quiz.id}`} className="score-pill">
-                        {result.score} / {result.maxScore} · {result.percentage}%
-                      </Link>
-                    ) : (
-                      <Link to={`/assessments/${quiz.id}`} className="button">Take quiz</Link>
-                    )}
+                    <span className="row-actions">
+                      {result && <span className="score-pill">{result.score} / {result.maxScore} · {result.percentage}%</span>}
+                      <ArrowLink to={`/assessments/${quiz.id}`} label={`Open ${quiz.title}`} />
+                    </span>
                   </li>
                 );
               })}

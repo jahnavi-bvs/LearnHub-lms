@@ -11,6 +11,8 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -40,6 +42,26 @@ public class CourseClient {
     /** For tests: use a RestClient wired to a mock server. */
     CourseClient(RestClient restClient) {
         this.restClient = restClient;
+    }
+
+    /**
+     * GET /api/courses/{id}/modules on course-service: the course's module ids, in order.
+     * Empty if the course no longer exists or isn't visible to this user.
+     */
+    public List<Long> findModuleIds(Long courseId, String bearerToken) {
+        try {
+            ModuleSummary[] modules = restClient.get()
+                    .uri("/api/courses/{id}/modules", courseId)
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerToken)
+                    .retrieve()
+                    .body(ModuleSummary[].class);
+            return modules == null ? List.of() : Arrays.stream(modules).map(ModuleSummary::id).toList();
+        } catch (HttpClientErrorException.NotFound e) {
+            return List.of();
+        } catch (RestClientException e) {
+            log.warn("Call to course-service for modules of course {} failed: {}", courseId, e.getMessage());
+            throw new CourseServiceUnavailableException(e);
+        }
     }
 
     /**
