@@ -2,6 +2,7 @@ package com.learnhub.auth.user;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -16,4 +17,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     // SELECT COUNT(*) > 0 FROM users WHERE email = ?
     boolean existsByEmail(String email);
+
+    // SELECT ... FROM users ORDER BY created_at DESC
+    List<User> findAllByOrderByCreatedAtDesc();
 }

@@ -35,8 +35,10 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 // Rules are checked top to bottom; the first match wins
                 .authorizeHttpRequests(auth -> auth
-                        // must come before "/api/courses/{id}", which would also match "mine"
+                        // must come before "/api/courses/{id}", which would also match "mine" and "all"
                         .requestMatchers(HttpMethod.GET, "/api/courses/mine").hasAnyRole("INSTRUCTOR", "ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/courses/all").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/courses/{id}/unpublish").hasRole("ADMIN")
                         // The module outline (titles only) is public; a module's content is not
                         .requestMatchers(HttpMethod.GET, "/api/courses", "/api/courses/{id}", "/api/courses/{id}/modules").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/courses/{id}/modules").hasAnyRole("INSTRUCTOR", "ADMIN")

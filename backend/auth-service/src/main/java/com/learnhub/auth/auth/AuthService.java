@@ -57,6 +57,11 @@ public class AuthService {
             throw new InvalidCredentialsException();
         }
 
+        // Checked after the password, so only the account's owner can learn it was deactivated
+        if (!user.isActive()) {
+            throw new AccountDeactivatedException();
+        }
+
         String token = tokenService.createToken(user);
         return new LoginResponse(token, "Bearer", tokenService.expiresInSeconds(), UserResponse.from(user));
     }

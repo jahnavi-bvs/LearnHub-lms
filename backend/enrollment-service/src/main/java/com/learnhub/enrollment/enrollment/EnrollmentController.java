@@ -21,9 +21,17 @@ import java.util.List;
 public class EnrollmentController {
 
     private final EnrollmentService enrollmentService;
+    private final EnrollmentRepository enrollmentRepository;
 
-    public EnrollmentController(EnrollmentService enrollmentService) {
+    public EnrollmentController(EnrollmentService enrollmentService, EnrollmentRepository enrollmentRepository) {
         this.enrollmentService = enrollmentService;
+        this.enrollmentRepository = enrollmentRepository;
+    }
+
+    /** Admin only (see SecurityConfig): one read with no rules, so no service method is needed. */
+    @GetMapping("/stats/by-course")
+    public List<CourseEnrollmentCount> countByCourse() {
+        return enrollmentRepository.countByCourse();
     }
 
     @PostMapping

@@ -37,6 +37,16 @@ public class CourseController {
         return courseService.listMine(CurrentUser.from(jwt));
     }
 
+    @GetMapping("/all")
+    public List<CourseResponse> listAll() {
+        return courseService.listAll();
+    }
+
+    @PutMapping("/{id}/unpublish")
+    public CourseResponse unpublish(@PathVariable Long id) {
+        return courseService.unpublish(id);
+    }
+
     /** Public endpoint: jwt is null when no token was sent. */
     @GetMapping("/{id}")
     public CourseResponse get(@PathVariable Long id, @AuthenticationPrincipal Jwt jwt) {

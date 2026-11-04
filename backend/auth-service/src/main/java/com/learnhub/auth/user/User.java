@@ -39,6 +39,10 @@ public class User {
     @Column(nullable = false, length = 20)
     private Role role;
 
+    // The database default matters: ddl-auto adds this column to existing rows, which must stay active
+    @Column(nullable = false, columnDefinition = "BOOLEAN NOT NULL DEFAULT TRUE")
+    private boolean active = true;
+
     @Column(nullable = false, updatable = false)
     private Instant createdAt;
 
@@ -76,6 +80,18 @@ public class User {
 
     public Role getRole() {
         return role;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
     }
 
     public Instant getCreatedAt() {

@@ -32,6 +32,22 @@ public class CourseService {
                 .toList();
     }
 
+    /** Admin only (see SecurityConfig): every instructor's courses, drafts included. */
+    @Transactional(readOnly = true)
+    public List<CourseResponse> listAll() {
+        return courseRepository.findAllByOrderByCreatedAtDesc().stream()
+                .map(CourseResponse::from)
+                .toList();
+    }
+
+    /** Admin only (see SecurityConfig). Takes the course out of the catalog without deleting anything. */
+    @Transactional
+    public CourseResponse unpublish(Long id) {
+        Course course = findOrThrow(id);
+        course.unpublish();
+        return CourseResponse.from(course);
+    }
+
     /**
      * Published courses are public. A draft is visible only to its owner or an admin;
      * everyone else gets 404 (not 403), so drafts don't reveal that they exist.

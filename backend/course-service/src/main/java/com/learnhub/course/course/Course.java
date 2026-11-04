@@ -85,6 +85,10 @@ public class Course {
         this.published = published;
     }
 
+    public void unpublish() {
+        this.published = false;
+    }
+
     public Long getId() {
         return id;
     }

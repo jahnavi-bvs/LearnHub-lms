@@ -1,5 +1,6 @@
 package com.learnhub.auth.common;
 
+import com.learnhub.auth.auth.AccountDeactivatedException;
 import com.learnhub.auth.auth.EmailAlreadyRegisteredException;
 import com.learnhub.auth.auth.InvalidCredentialsException;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -48,6 +49,13 @@ public class GlobalExceptionHandler {
     public ProblemDetail handleInvalidCredentials(InvalidCredentialsException ex) {
         ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, ex.getMessage());
         problem.setTitle("Authentication failed");
+        return problem;
+    }
+
+    @ExceptionHandler(AccountDeactivatedException.class)
+    public ProblemDetail handleDeactivated(AccountDeactivatedException ex) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.FORBIDDEN, ex.getMessage());
+        problem.setTitle("Account deactivated");
         return problem;
     }
 

@@ -11,4 +11,7 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
 
     // SELECT ... FROM courses WHERE instructor_id = ? ORDER BY created_at DESC
     List<Course> findByInstructorIdOrderByCreatedAtDesc(Long instructorId);
+
+    // SELECT ... FROM courses ORDER BY created_at DESC
+    List<Course> findAllByOrderByCreatedAtDesc();
 }

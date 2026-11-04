@@ -27,6 +27,7 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.POST, "/api/auth/register", "/api/auth/login").permitAll()
+                        .requestMatchers("/api/auth/users/**").hasRole("ADMIN")
                         // Spring forwards errors to /error; without this, error responses become 401/403
                         .requestMatchers("/error").permitAll()
                         .anyRequest().authenticated())

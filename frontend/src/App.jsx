@@ -9,7 +9,9 @@ import CourseListPage from './pages/CourseListPage';
 import DashboardPage from './pages/DashboardPage';
 import LearnPage from './pages/LearnPage';
 import LoginPage from './pages/LoginPage';
+import ManageCoursesPage from './pages/ManageCoursesPage';
 import ManageModulesPage from './pages/ManageModulesPage';
+import ManageUsersPage from './pages/ManageUsersPage';
 import ModuleFormPage from './pages/ModuleFormPage';
 import MyLearningPage from './pages/MyLearningPage';
 import MyQuizzesPage from './pages/MyQuizzesPage';
@@ -25,6 +27,7 @@ import TeachingStudentsPage from './pages/TeachingStudentsPage';
 
 const STUDENTS = ['STUDENT'];
 const TEACHERS = ['INSTRUCTOR', 'ADMIN'];
+const ADMINS = ['ADMIN'];
 
 /** URL -> page. Routes nested inside <Layout> render in its <Outlet />. */
 export default function App() {
@@ -60,6 +63,12 @@ export default function App() {
         <Route path="/teaching/courses/:id/modules/:moduleId/edit" element={<RequireAuth roles={TEACHERS}><ModuleFormPage /></RequireAuth>} />
         <Route path="/teaching/courses/:id/quizzes/new"element={<RequireAuth roles={TEACHERS}><QuizBuilderPage /></RequireAuth>} />
         <Route path="/teaching/assessments/:id/submissions" element={<RequireAuth roles={TEACHERS}><QuizSubmissionsPage /></RequireAuth>} />
+
+        {/* Admin area. The keys stop the three user pages sharing state. */}
+        <Route path="/admin/courses" element={<RequireAuth roles={ADMINS}><ManageCoursesPage /></RequireAuth>} />
+        <Route path="/admin/students" element={<RequireAuth roles={ADMINS}><ManageUsersPage key="students" title="Manage students" role="STUDENT" /></RequireAuth>} />
+        <Route path="/admin/instructors" element={<RequireAuth roles={ADMINS}><ManageUsersPage key="instructors" title="Manage instructors" role="INSTRUCTOR" /></RequireAuth>} />
+        <Route path="/admin/users" element={<RequireAuth roles={ADMINS}><ManageUsersPage key="users" title="Users" canChangeRole /></RequireAuth>} />
 
         <Route path="*" element={<NotFoundPage />} />
       </Route>

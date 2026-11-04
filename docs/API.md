@@ -101,6 +101,7 @@ Suggested client handling: **401 → clear the token and go to the login page**;
   "fullName": "Jahnavi Student",
   "email": "student1@learnhub.com",
   "role": "STUDENT",
+  "active": true,
   "createdAt": "2026-10-27T11:49:14.576616Z"
 }
 ```
@@ -140,12 +141,30 @@ Errors: 400 `Validation failed` (choosing `ADMIN` reports `errors.roleAllowed`),
 ```
 
 Errors: 400 `Validation failed`, 401 `Authentication failed` (`detail`: `"Invalid email or password"` -
-the same for an unknown email and a wrong password).
+the same for an unknown email and a wrong password), 403 `Account deactivated` (correct password, but
+an admin has deactivated the account).
 
 ### `GET /api/auth/me` - any logged-in user
 
 **200** → user object for the token's owner. Use it on app start to check that a stored token still works.
 Errors: 401, 404 (user deleted after the token was issued).
+
+### Admin endpoints - ADMIN only
+
+Other roles get 403. The first admin account (`admin@learnhub.com`) is created when auth-service starts,
+if `ADMIN_PASSWORD` is set in `local-secrets.properties`. The API can't create admins.
+
+| Endpoint | Body | Result |
+|---|---|---|
+| `GET /api/auth/users` | | **200** → every user, newest first |
+| `PUT /api/auth/users/{id}/active` | `{ "active": false }` | **200** → updated user |
+| `PUT /api/auth/users/{id}/role` | `{ "role": "INSTRUCTOR" }` | **200** → updated user |
+| `GET /api/courses/all` | | **200** → every course, unpublished ones included |
+| `PUT /api/courses/{id}/unpublish` | | **200** → updated course |
+| `GET /api/enrollments/stats/by-course` | | **200** → `[{ "courseId": 6, "enrollments": 12 }]`, most enrolled first |
+
+Errors for the two user changes: 400 `Validation failed` (`role` must be `STUDENT` or `INSTRUCTOR`),
+404, 409 (admin accounts, including your own, can't be changed).
 
 ---
 
@@ -389,6 +408,10 @@ One **0-based** option index per question, in question order:
 - **Copied names are not updated.** `instructorName`, `studentName` and `courseTitle` keep the value
   they had when the record was created.
 - **No pagination or search** on list endpoints.
-- **No admin endpoints yet.** ADMIN accounts can't be created through the API.
+- **Account changes reach existing tokens late.** A deactivated user can't log in again, but a token
+  they already hold keeps working until it expires (up to 1 hour). A role change also applies from
+  the next login.
+- **Instructors can republish.** After an admin unpublishes a course, its instructor can still publish
+  it again from the edit page.
 - **403 `detail` text varies by service.** assessment-service explains the reason; course- and
   enrollment-service return a generic message.

@@ -37,7 +37,7 @@ React :5173 ───► │ CORS · JWT check at the edge · routing · 503 whe
 | Gateway | Spring Cloud Gateway Server WebMVC (Spring Cloud 2025.1) |
 | Database | MySQL 8.0 |
 | Frontend | React 19, React Router 7, Vite 8, plain CSS |
-| Tests | JUnit 5, Mockito, MockMvc, MockRestServiceServer (113 backend tests) |
+| Tests | JUnit 5, Mockito, MockMvc, MockRestServiceServer (139 backend tests) |
 
 ## Prerequisites
 
@@ -80,8 +80,9 @@ Tables are created automatically by Hibernate on first start.
 ### 2. Secrets
 
 Copy `backend/local-secrets.properties.example` to `backend/local-secrets.properties` and fill in
-`DB_PASSWORD` and `JWT_SECRET` (the template explains how to generate the secret). This file is
-git-ignored. Environment variables with the same names override it.
+`DB_PASSWORD`, `JWT_SECRET` (the template explains how to generate it) and `ADMIN_PASSWORD`, which
+creates the `admin@learnhub.com` account the next time auth-service starts. This file is git-ignored.
+Environment variables with the same names override it.
 
 ### 3. Frontend dependencies
 
@@ -121,12 +122,13 @@ those through the app's Manage modules page.
 3. Open http://localhost:5173
 
 Register an **Instructor** to create courses and quizzes, and a **Student** to enroll and take them.
+Log in as `admin@learnhub.com` to manage users and courses.
 
 ## Testing
 
 ```powershell
 cd backend
-.\mvnw.cmd test          # all 113 tests in all five services (uses the *_test databases)
+.\mvnw.cmd test          # all 139 tests in all five services (uses the *_test databases)
 
 cd ..\frontend
 npm run lint
@@ -156,5 +158,6 @@ docs/
 ## Known limitations
 
 No token refresh (log in again after 1 hour); deleting a course doesn't remove its enrollments or
-quizzes in the other services; no pagination; quizzes can't be edited after creation; no admin UI.
+quizzes in the other services; no pagination; quizzes can't be edited after creation; deactivating
+a user stops new logins, but a token they already hold works until it expires.
 See [docs/API.md](docs/API.md#8-known-limitations).

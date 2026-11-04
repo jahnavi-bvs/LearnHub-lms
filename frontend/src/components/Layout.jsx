@@ -23,6 +23,16 @@ const INSTRUCTOR_MENU = [
   { to: '/', label: 'Browse courses', icon: 'book', end: true },
 ];
 
+const ADMIN_MENU = [
+  { to: '/dashboard', label: 'Dashboard', icon: 'home' },
+  { to: '/admin/courses', label: 'Manage courses', icon: 'layers' },
+  { to: '/admin/students', label: 'Manage students', icon: 'users' },
+  { to: '/admin/instructors', label: 'Manage instructors', icon: 'book' },
+  { to: '/admin/users', label: 'Users', icon: 'user' },
+];
+
+const MENUS = { STUDENT: STUDENT_MENU, INSTRUCTOR: INSTRUCTOR_MENU, ADMIN: ADMIN_MENU };
+
 function Logo({ to }) {
   return (
     <Link to={to} className="brand">
@@ -58,7 +68,8 @@ function PublicLayout() {
 /** Logged-in users: sidebar + top bar (student and instructor sketches). */
 function AppShell() {
   const { user, logout } = useAuth();
-  const menu = user.role === 'STUDENT' ? STUDENT_MENU : INSTRUCTOR_MENU;
+  const menu = MENUS[user.role];
+  const isAdmin = user.role === 'ADMIN';
   const firstName = user.fullName.split(' ')[0];
   // Inside a lesson the main sidebar goes away: the module list takes its place
   const inLesson = useMatch('/courses/:id/learn/*') !== null;
@@ -83,6 +94,18 @@ function AppShell() {
               </NavLink>
             ))}
           </nav>
+          {isAdmin && (
+            <div className="sidebar-foot">
+              <NavLink to="/profile" className="sidebar-account" title="My profile">
+                <span className="sidebar-avatar"><Icon name="user" /></span>
+                <span>
+                  <strong>{user.fullName}</strong>
+                  <span className="muted small-count">Administrator</span>
+                </span>
+              </NavLink>
+              <button type="button" className="button button-secondary" onClick={handleLogout}>Sign out</button>
+            </div>
+          )}
         </aside>
       )}
 
@@ -93,14 +116,19 @@ function AppShell() {
             Welcome, <strong>{firstName}</strong>
           </p>
           <div className="topbar-actions">
-            <SearchBox />
+            {/* Admins have their account and sign out in the sidebar, and no catalog to search */}
+            {!isAdmin && <SearchBox />}
             <ThemeToggle />
-            <NavLink to="/profile" className="icon-button" aria-label="My profile" title="My profile">
-              <Icon name="user" />
-            </NavLink>
-            <button type="button" className="icon-button" onClick={handleLogout} aria-label="Log out" title="Log out">
-              <Icon name="logout" />
-            </button>
+            {(!isAdmin || inLesson) && (
+              <>
+                <NavLink to="/profile" className="icon-button" aria-label="My profile" title="My profile">
+                  <Icon name="user" />
+                </NavLink>
+                <button type="button" className="icon-button" onClick={handleLogout} aria-label="Log out" title="Log out">
+                  <Icon name="logout" />
+                </button>
+              </>
+            )}
           </div>
         </header>
         <main className="shell-content">
