@@ -75,27 +75,39 @@ class EnrollmentStatsIntegrationTest {
     }
 
     @Test
-    void admin_seesTheCountForEachCourse() throws Exception {
+    void visitorWithNoToken_seesTheCountForEachCourse() throws Exception {
         enroll(801, COURSE_A);
         enroll(802, COURSE_A);
         enroll(801, COURSE_B);
 
-        mockMvc.perform(get("/api/enrollments/stats/by-course").header(HttpHeaders.AUTHORIZATION, token(1, "ADMIN")))
+        mockMvc.perform(get("/api/enrollments/stats/by-course"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[?(@.courseId == " + COURSE_A + ")].enrollments").value(2))
                 .andExpect(jsonPath("$[?(@.courseId == " + COURSE_B + ")].enrollments").value(1));
     }
 
     @Test
-    void instructorsAndStudents_cannotSeeStats() throws Exception {
-        mockMvc.perform(get("/api/enrollments/stats/by-course").header(HttpHeaders.AUTHORIZATION, token(11, "INSTRUCTOR")))
-                .andExpect(status().isForbidden());
-        mockMvc.perform(get("/api/enrollments/stats/by-course").header(HttpHeaders.AUTHORIZATION, token(801, "STUDENT")))
-                .andExpect(status().isForbidden());
+    void mostEnrolledComesFirst() throws Exception {
+        enroll(801, COURSE_B);
+        enroll(801, COURSE_A);
+        enroll(802, COURSE_A);
+
+        mockMvc.perform(get("/api/enrollments/stats/by-course"))
+                .andExpect(jsonPath("$[0].courseId").value(COURSE_A));
     }
 
     @Test
-    void noToken_returns401() throws Exception {
-        mockMvc.perform(get("/api/enrollments/stats/by-course")).andExpect(status().isUnauthorized());
+    void response_revealsNoStudents() throws Exception {
+        enroll(801, COURSE_A);
+
+        mockMvc.perform(get("/api/enrollments/stats/by-course"))
+                .andExpect(jsonPath("$[0].length()").value(2))
+                .andExpect(jsonPath("$[0].studentId").doesNotExist());
+    }
+
+    @Test
+    void otherEnrollmentRoutes_stillNeedAToken() throws Exception {
+        mockMvc.perform(get("/api/enrollments/mine")).andExpect(status().isUnauthorized());
+        mockMvc.perform(get("/api/enrollments/course/" + COURSE_A)).andExpect(status().isUnauthorized());
     }
 }

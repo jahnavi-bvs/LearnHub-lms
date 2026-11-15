@@ -161,10 +161,14 @@ if `ADMIN_PASSWORD` is set in `local-secrets.properties`. The API can't create a
 | `PUT /api/auth/users/{id}/role` | `{ "role": "INSTRUCTOR" }` | **200** → updated user |
 | `GET /api/courses/all` | | **200** → every course, unpublished ones included |
 | `PUT /api/courses/{id}/unpublish` | | **200** → updated course |
-| `GET /api/enrollments/stats/by-course` | | **200** → `[{ "courseId": 6, "enrollments": 12 }]`, most enrolled first |
 
 Errors for the two user changes: 400 `Validation failed` (`role` must be `STUDENT` or `INSTRUCTOR`),
 404, 409 (admin accounts, including your own, can't be changed).
+
+### `GET /api/enrollments/stats/by-course` - public
+
+**200** → `[{ "courseId": 6, "enrollments": 12 }]`, most enrolled first. Totals only, no student details.
+Powers "Popular now" on the landing page and the admin dashboard chart. Unpublished courses are included.
 
 ---
 

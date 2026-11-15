@@ -1,5 +1,10 @@
 import { apiRequest } from './client';
 
+/** GET /api/enrollments/stats/by-course - public: [{ courseId, enrollments }], most enrolled first. */
+export function enrollmentCounts() {
+  return apiRequest('/api/enrollments/stats/by-course');
+}
+
 /** POST /api/enrollments - STUDENT only. */
 export function enroll(courseId, token) {
   return apiRequest('/api/enrollments', { method: 'POST', body: { courseId }, token });

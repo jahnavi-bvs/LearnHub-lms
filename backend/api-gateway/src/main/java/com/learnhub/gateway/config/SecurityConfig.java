@@ -43,6 +43,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/auth/register", "/api/auth/login").permitAll()
                         // Public catalog. (/api/courses/mine also matches {id}; course-service protects it itself.)
                         .requestMatchers(HttpMethod.GET, "/api/courses", "/api/courses/{id}", "/api/courses/{id}/modules").permitAll()
+                        // Enrollment totals for "Popular now" on the public landing page
+                        .requestMatchers(HttpMethod.GET, "/api/enrollments/stats/by-course").permitAll()
                         .requestMatchers("/error").permitAll()
                         .anyRequest().authenticated())
                 // No custom role converter here: the gateway never checks roles

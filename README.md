@@ -37,7 +37,7 @@ React :5173 ───► │ CORS · JWT check at the edge · routing · 503 whe
 | Gateway | Spring Cloud Gateway Server WebMVC (Spring Cloud 2025.1) |
 | Database | MySQL 8.0 |
 | Frontend | React 19, React Router 7, Vite 8, plain CSS |
-| Tests | JUnit 5, Mockito, MockMvc, MockRestServiceServer (139 backend tests) |
+| Tests | JUnit 5, Mockito, MockMvc, MockRestServiceServer (141 backend tests) |
 
 ## Prerequisites
 
@@ -128,7 +128,7 @@ Log in as `admin@learnhub.com` to manage users and courses.
 
 ```powershell
 cd backend
-.\mvnw.cmd test          # all 139 tests in all five services (uses the *_test databases)
+.\mvnw.cmd test          # all 141 tests in all five services (uses the *_test databases)
 
 cd ..\frontend
 npm run lint

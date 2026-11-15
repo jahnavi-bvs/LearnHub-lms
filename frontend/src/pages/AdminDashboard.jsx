@@ -1,4 +1,5 @@
-import { enrollmentsByCourse, listAllCourses, listUsers } from '../api/admin';
+import { listAllCourses, listUsers } from '../api/admin';
+import { enrollmentCounts } from '../api/enrollments';
 import { useAuth } from '../auth/useAuth';
 import DonutChart from '../components/DonutChart';
 import StatCard from '../components/StatCard';
@@ -33,7 +34,7 @@ export default function AdminDashboard() {
   const { user, token } = useAuth();
   const users = useAsync(() => listUsers(token), [token]);
   const courses = useAsync(() => listAllCourses(token), [token]);
-  const counts = useAsync(() => enrollmentsByCourse(token), [token]);
+  const counts = useAsync(() => enrollmentCounts(), []);
 
   const allUsers = users.data ?? [];
   const allCourses = courses.data ?? [];

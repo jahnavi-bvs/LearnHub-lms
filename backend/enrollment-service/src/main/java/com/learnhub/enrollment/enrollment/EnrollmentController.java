@@ -28,7 +28,7 @@ public class EnrollmentController {
         this.enrollmentRepository = enrollmentRepository;
     }
 
-    /** Admin only (see SecurityConfig): one read with no rules, so no service method is needed. */
+    /** Public (see SecurityConfig): one read with no rules, so no service method is needed. */
     @GetMapping("/stats/by-course")
     public List<CourseEnrollmentCount> countByCourse() {
         return enrollmentRepository.countByCourse();

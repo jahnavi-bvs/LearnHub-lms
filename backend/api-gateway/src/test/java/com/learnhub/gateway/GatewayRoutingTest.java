@@ -103,6 +103,14 @@ class GatewayRoutingTest {
     }
 
     @Test
+    void enrollmentTotals_arePublic_butOtherEnrollmentRoutesNeedAToken() throws Exception {
+        mockMvc.perform(get("/api/enrollments/stats/by-course"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.path").value("/api/enrollments/stats/by-course"));
+        mockMvc.perform(get("/api/enrollments/stats/other")).andExpect(status().isUnauthorized());
+    }
+
+    @Test
     void moduleOutline_isPublic_butModuleContentNeedsAToken() throws Exception {
         mockMvc.perform(get("/api/courses/6/modules"))
                 .andExpect(status().isOk())

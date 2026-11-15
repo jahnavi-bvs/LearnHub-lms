@@ -30,7 +30,8 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.GET, "/api/enrollments/stats/by-course").hasRole("ADMIN")
+                        // Public: "Popular now" on the landing page. Only course ids and totals, never students
+                        .requestMatchers(HttpMethod.GET, "/api/enrollments/stats/by-course").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/enrollments").hasRole("STUDENT")
                         .requestMatchers(HttpMethod.GET, "/api/enrollments/mine", "/api/enrollments/mine/progress").hasRole("STUDENT")
                         // "is it YOUR enrollment?" is checked in ProgressService

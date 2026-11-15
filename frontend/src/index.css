@@ -414,6 +414,12 @@ section:first-child > .section-title:first-child {
   gap: 1rem;
 }
 
+.view-more {
+  display: flex;
+  justify-content: center;
+  margin-top: 1.25rem;
+}
+
 /* "Popular now": one row that scrolls sideways */
 .popular-row {
   list-style: none;

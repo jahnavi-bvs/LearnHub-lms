@@ -24,8 +24,3 @@ export function listAllCourses(token) {
 export function unpublishCourse(id, token) {
   return apiRequest(`/api/courses/${id}/unpublish`, { method: 'PUT', token });
 }
-
-/** GET /api/enrollments/stats/by-course - [{ courseId, enrollments }], most enrolled first. */
-export function enrollmentsByCourse(token) {
-  return apiRequest('/api/enrollments/stats/by-course', { token });
-}

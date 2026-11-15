@@ -5,7 +5,7 @@ spring:
   application:
     name: api-gateway
 
-  # Same shared secrets file as the other services (JWT_SECRET)
+  # Same shared secrets file as the other services (JWT_SECRET) - gets it from gitignored.
   config:
     import:
       - optional:file:./local-secrets.properties
